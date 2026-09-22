@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शुभकामना डेरी - Shubhakamana Dairy</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#006689">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dairy: { 50: '#f0f7fb', 100: '#c2e8ff', 600: '#006689', 700: '#004f69' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans pb-24">
+    <!-- Top Header -->
+    <header class="bg-dairy-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-dairy-600 font-bold text-xl shadow overflow-hidden border-2 border-white">
+                    <i class="fa-solid fa-cow text-dairy-600"></i>
+                </div>
+                <div>
+                    <h1 id="headerDairyName" class="text-base font-bold leading-tight">शुभकामना डेरी</h1>
+                    <p class="text-[10px] text-dairy-100">शुद्ध दूध स्वस्थ जीवन</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="relative cursor-pointer" onclick="alert('कुनै नयाँ सूचना छैन।')">
+                    <i class="fa-regular fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">3</span>
+                </div>
+                <div class="w-8 h-8 bg-dairy-700 rounded-full flex items-center justify-center text-white text-sm shadow border border-dairy-600 cursor-pointer" onclick="switchTab('more')">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto p-4 space-y-4" id="mainContent">
+
+        <!-- 1. Dashboard (गृहपृष्ठ) -->
+        <section id="tab-home" class="space-y-4 tab-section">
+            <!-- Date & Shift Bar -->
+            <div class="flex justify-between items-center bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
+                <div class="text-xs font-bold text-gray-700 flex items-center">
+                    <i class="fa-solid fa-calendar-days text-dairy-600 text-sm mr-2"></i>
+                    <div>
+                        <div id="dashDateHeader">2083-06-06 (मंगलबार)</div>
+                        <div class="text-[10px] text-gray-400 font-normal">(आजको मिति)</div>
+                    </div>
+                </div>
+                <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-semibold">
+                    <button onclick="setShiftFilter('MORNING')" id="shiftMorningBtn" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center space-x-1">
+                        <i class="fa-solid fa-sun text-yellow-300"></i> <span>बिहान</span>
+                    </button>
+                    <button onclick="setShiftFilter('EVENING')" id="shiftEveningBtn" class="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center space-x-1">
+                        <i class="fa-solid fa-moon text-gray-400"></i> <span>साँझ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Metric Cards Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-blue-50/90 p-3.5 rounded-2xl shadow-sm border border-blue-100 relative">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center text-sm shadow">
+                            <i class="fa-solid fa-bottle-droplet"></i>
+                        </div>
+                        <span class="text-xs font-bold text-blue-900">आजको दूध संकलन</span>
+                    </div>
+                    <h3 id="dashTotalLiters" class="text-xl font-black text-blue-950 mt-2">0 L</h3>
+                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ संकलन <span id="dashEntriesCount" class="text-gray-500 font-normal">0 इन्ट्रि</span></p>
+                </div>
+
+                <div class="bg-emerald-50/90 p-3.5 rounded-2xl shadow-sm border border-emerald-100 relative">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-sm shadow">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-900">सक्रिय ग्राहक</span>
+                    </div>
+                    <h3 id="dashActiveCustomers" class="text-xl font-black text-emerald-950 mt-2">0 जना</h3>
+                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">कृषक तथा खरिदकर्ता</p>
+                </div>
+
+                <div class="bg-amber-50/90 p-3.5 rounded-2xl shadow-sm border border-amber-100 relative">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-amber-500 text-white rounded-xl flex items-center justify-center text-sm shadow">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                        <span class="text-xs font-bold text-amber-900">आजको रकम</span>
+                    </div>
+                    <h3 id="dashTotalAmount" class="text-xl font-black text-amber-950 mt-2">Rs. 0</h3>
+                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">भुक्तानी योग्य मूल्य</p>
+                </div>
+
+                <div class="bg-purple-50/90 p-3.5 rounded-2xl shadow-sm border border-purple-100 relative">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-sm shadow">
+                            <i class="fa-solid fa-droplet"></i>
+                        </div>
+                        <span class="text-xs font-bold text-purple-900">औसत फ्याट</span>
+                    </div>
+                    <h3 id="dashAvgFat" class="text-xl font-black text-purple-950 mt-2">4.1%</h3>
+                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">गुणस्तर मापन</p>
+                </div>
+            </div>
+
+
+
+            <!-- Quick Action Buttons (Without heading text) -->
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    <button onclick="switchTab('milk')" class="p-2.5 bg-blue-600 hover:bg-blue-700 rounded-2xl text-white transition flex flex-col items-center shadow-md">
+                        <i class="fa-solid fa-bottle-droplet text-lg mb-1"></i>
+                        <span class="text-[11px] font-bold leading-tight">दूध Entry</span>
+                    </button>
+                    <button onclick="switchTab('customers')" class="p-2.5 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-white transition flex flex-col items-center shadow-md">
+                        <i class="fa-solid fa-user-plus text-lg mb-1"></i>
+                        <span class="text-[11px] font-bold leading-tight">नयाँ ग्राहक</span>
+                    </button>
+                    <button onclick="switchTab('payment')" class="p-2.5 bg-amber-500 hover:bg-amber-600 rounded-2xl text-white transition flex flex-col items-center shadow-md">
+                        <i class="fa-solid fa-coins text-lg mb-1"></i>
+                        <span class="text-[11px] font-bold leading-tight">भुक्तानी</span>
+                    </button>
+                    <button onclick="switchTab('more')" class="p-2.5 bg-purple-600 hover:bg-purple-700 rounded-2xl text-white transition flex flex-col items-center shadow-md">
+                        <i class="fa-solid fa-file-lines text-lg mb-1"></i>
+                        <span class="text-[11px] font-bold leading-tight">विवरण</span>
+                    </button>
+                </div>
+            </div>
+
+
+
+            <!-- Today's Collection Breakdown (बिहान, बेलुका, जम्मा) -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                <h4 class="text-xs font-bold text-gray-700">🥛 आजको दूध संकलन (Collection)</h4>
+                <div class="grid grid-cols-3 gap-2 text-center bg-blue-50/50 p-2.5 rounded-xl border border-blue-100">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-medium">☀️ बिहान</p>
+                        <p id="summaryMorningL" class="text-sm font-bold text-blue-600 mt-0.5">0 L</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-medium">🌙 बेलुका</p>
+                        <p id="summaryEveningL" class="text-sm font-bold text-purple-600 mt-0.5">0 L</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-medium">जम्मा संकलन</p>
+                        <p id="summaryTotalL" class="text-sm font-bold text-dairy-600 mt-0.5">0 L</p>
+                    </div>
+                </div>
+
+                <h4 class="text-xs font-bold text-gray-700 pt-2">🛒 आजको दूध बिक्री (Sales)</h4>
+                <div class="grid grid-cols-3 gap-2 text-center bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-medium">🛍️ खुद्रा (Retail)</p>
+                        <p id="summaryRetailL" class="text-sm font-bold text-emerald-700 mt-0.5">0 L</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-medium">📦 होलसेल (Wholesale)</p>
+                        <p id="summaryWholesaleL" class="text-sm font-bold text-amber-700 mt-0.5">0 L</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-medium">जम्मा बिक्री</p>
+                        <p id="summaryTotalSalesL" class="text-sm font-bold text-emerald-600 mt-0.5">0 L</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pasture & Cow Footer Banner -->
+            <div class="rounded-2xl overflow-hidden shadow-sm border border-emerald-100 bg-gradient-to-t from-emerald-300 via-emerald-100 to-emerald-50 p-3 text-center">
+                <div class="flex justify-between items-center text-emerald-900 text-[11px] font-bold px-2">
+                    <span>🐄 शुभकामना डेरी</span>
+                    <span>शुद्ध दूध • स्वस्थ जीवन</span>
+                </div>
+                <div class="mt-2 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-inner">
+                    🏔️ 🌿 🐄 🌾 🥛 🏔️
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Milk Collection Entry (संकलन) -->
+        <section id="tab-milk" class="space-y-4 tab-section hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-base font-bold text-dairy-600 mb-3"><i class="fa-solid fa-cow mr-2"></i>दूध Entry (Milk Collection)</h3>
+                <form id="milkEntryForm" onsubmit="saveMilkEntry(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ग्राहक / कृषक छान्नुहोस्</label>
+                        <select id="entryCustomer" required onchange="calculateAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-dairy-600 outline-none">
+                            <option value="">-- ग्राहक छान्नुहोस् --</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">मिति (Date)</label>
+                            <input type="text" id="entryDate" required placeholder="2083-06-03" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">सिफ्ट (Shift)</label>
+                            <select id="entryShift" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="MORNING">☀️ बिहान (Morning)</option>
+                                <option value="EVENING">🌙 साँझ (Evening)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">लिटर (Liters)</label>
+                            <input type="number" step="0.1" id="entryLiters" required placeholder="0.0" oninput="calculateAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">फ्याट % (Fat)</label>
+                            <input type="number" step="0.1" id="entryFat" placeholder="4.2" oninput="calculateAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">SNF %</label>
+                            <input type="number" step="0.1" id="entrySnf" placeholder="8.5" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">प्रति लिटर दर (रु)</label>
+                            <input type="number" step="0.5" id="entryRate" required placeholder="75.0" oninput="calculateAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">जम्मा रकम (रु)</label>
+                            <input type="number" step="0.1" id="entryTotal" readonly class="w-full p-2.5 border rounded-lg text-sm bg-gray-100 font-bold text-dairy-600">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+                        <i class="fa-solid fa-check mr-2"></i>इन्ट्री सेभ गर्नुहोस्
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. Milk Sales Entry (दूध बिक्री) -->
+        <section id="tab-sales" class="space-y-4 tab-section hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-base font-bold text-cyan-700 mb-3"><i class="fa-solid fa-cart-shopping mr-2"></i>दूध बिक्री प्रविष्टि (Milk Sales)</h3>
+                <form id="milkSaleForm" onsubmit="saveMilkSale(event)" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">मिति (Date)</label>
+                            <input type="text" id="saleDate" required class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">बिक्री प्रकार (Type)</label>
+                            <select id="saleType" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="RETAIL">🛍️ खुद्रा (Retail)</option>
+                                <option value="WHOLESALE">📦 होलसेल (Wholesale)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">खरिदकर्ता / पसलको नाम</label>
+                        <input type="text" id="saleBuyerName" required placeholder="ग्राहक वा होटलको नाम" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">लिटर (Liters)</label>
+                            <input type="number" step="0.1" id="saleLiters" required placeholder="0.0" oninput="calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">दर (रु/लिटर)</label>
+                            <input type="number" step="0.5" id="saleRate" required placeholder="95.0" oninput="calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">जम्मा (रु)</label>
+                            <input type="number" step="0.1" id="saleTotal" readonly class="w-full p-2.5 border rounded-lg text-sm bg-gray-100 font-bold text-cyan-700">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+                        <i class="fa-solid fa-check mr-2"></i>बिक्री सुरक्षित गर्नुहोस्
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h4 class="text-xs font-bold text-gray-700 mb-3">हालैका बिक्री रेकर्डहरू</h4>
+                <div id="salesListContainer" class="space-y-2 max-h-60 overflow-y-auto text-xs">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Customers (ग्राहक) -->
+        <section id="tab-customers" class="space-y-4 tab-section hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-base font-bold text-dairy-600"><i class="fa-solid fa-users mr-2"></i>ग्राहक सूची</h3>
+                    <p class="text-[11px] text-gray-400" id="customerCountSummary">कुल 0 ग्राहकहरू</p>
+                </div>
+                <button onclick="openCustomerModal()" class="bg-dairy-600 hover:bg-dairy-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
+                    <i class="fa-solid fa-user-plus mr-1"></i> नयाँ ग्राहक
+                </button>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div class="mb-3">
+                    <input type="text" id="customerSearch" oninput="renderCustomers()" placeholder="नाम वा फोन नम्बरद्वारा खोज्नुहोस्..." class="w-full p-2.5 border rounded-lg text-sm bg-gray-50 outline-none">
+                </div>
+                <div id="customersListContainer" class="space-y-2 max-h-[500px] overflow-y-auto">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Payment / Statement (भुक्तानी) -->
+        <section id="tab-payment" class="space-y-4 tab-section hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-base font-bold text-dairy-600 mb-3"><i class="fa-solid fa-hand-holding-dollar mr-2"></i>भुक्तानी तथा स्टेटमेन्ट (Payment)</h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ग्राहक छान्नुहोस्</label>
+                        <select id="ledgerCustomer" onchange="loadCustomerLedger()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                            <option value="">-- ग्राहक छान्नुहोस् --</option>
+                        </select>
+                    </div>
+                    <div id="ledgerDetails" class="hidden space-y-3 pt-2 border-t">
+                        <div class="bg-dairy-50 p-3 rounded-lg flex justify-between items-center">
+                            <div>
+                                <p id="ledgerCustName" class="font-bold text-sm text-gray-800">रामबहादुर श्रेष्ठ</p>
+                                <p id="ledgerCustPhone" class="text-xs text-gray-500">9841882310 • लिखु-६, नुवाकोट</p>
+                            </div>
+                            <button onclick="printPdfStatement()" class="bg-dairy-600 hover:bg-dairy-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center">
+                                <i class="fa-solid fa-print mr-1.5"></i> प्रिन्ट PDF
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="bg-gray-50 p-2.5 rounded border">
+                                <p class="text-gray-500">कुल लिटर</p>
+                                <p id="ledgerTotalLiters" class="font-bold text-gray-800 mt-0.5">0 L</p>
+                            </div>
+                            <div class="bg-gray-50 p-2.5 rounded border">
+                                <p class="text-gray-500">कुल रकम</p>
+                                <p id="ledgerTotalAmt" class="font-bold text-emerald-600 mt-0.5">रु 0</p>
+                            </div>
+                            <div class="bg-gray-50 p-2.5 rounded border">
+                                <p class="text-gray-500">बाँकी बक्यौता</p>
+                                <p id="ledgerBalance" class="font-bold text-red-600 mt-0.5">रु 0</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg border space-y-2">
+                            <h5 class="text-xs font-bold text-gray-700"><i class="fa-solid fa-wallet mr-1 text-emerald-600"></i>भुक्तानी गर्नुहोस्</h5>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" id="paymentAmount" placeholder="रकम (रु)" class="p-2 border rounded text-xs bg-white">
+                                <input type="text" id="paymentNotes" placeholder="नोट / टिप्पणी" class="p-2 border rounded text-xs bg-white">
+                            </div>
+                            <button onclick="recordPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded text-xs transition shadow">
+                                भुक्तानी सुरक्षित गर्नुहोस्
+                            </button>
+                        </div>
+                        <div>
+                            <h5 class="text-xs font-bold text-gray-700 mb-2">कारोबार विवरण</h5>
+                            <div id="ledgerEntriesTable" class="overflow-x-auto text-xs">
+                                <!-- Dynamic -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. More / Settings (थप) -->
+        <section id="tab-more" class="space-y-4 tab-section hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div id="moreOwnerInitial" class="w-12 h-12 bg-dairy-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow">
+                        द
+                    </div>
+                    <div>
+                        <h4 id="moreOwnerName" class="font-bold text-gray-800">दामोदर अधिकारी</h4>
+                        <p class="text-xs text-gray-500">सञ्चालक (Admin)</p>
+                    </div>
+                </div>
+                <span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-semibold">सक्रिय</span>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y">
+                <button onclick="switchTab('finance'); renderFinanceReport();" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
+                    <span class="flex items-center text-gray-700"><i class="fa-solid fa-scale-balanced text-amber-600 w-6"></i> आम्दानी र खर्च (Income & Expense)</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                </button>
+                <button onclick="switchTab('payment')" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
+                    <span class="flex items-center text-gray-700"><i class="fa-solid fa-file-invoice text-dairy-600 w-6"></i> मासिक विवरण तथा स्टेटमेन्ट</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                </button>
+                <button onclick="openSettingsModal()" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
+                    <span class="flex items-center text-gray-700"><i class="fa-solid fa-gear text-dairy-600 w-6"></i> डेरी सेटिंग्स (नाम, ठेगाना, फोन)</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                </button>
+                <button onclick="exportBackup()" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
+                    <span class="flex items-center text-gray-700"><i class="fa-solid fa-cloud-arrow-down text-emerald-600 w-6"></i> डेटा ब्याकअप डाउनलोड (Export JSON)</span>
+                    <i class="fa-solid fa-download text-gray-400 text-xs"></i>
+                </button>
+                <label class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm cursor-pointer">
+                    <span class="flex items-center text-gray-700"><i class="fa-solid fa-cloud-arrow-up text-dairy-600 w-6"></i> ब्याकअपबाट डेटा रिस्टोर गर्नुहोस्</span>
+                    <input type="file" accept=".json" onchange="importBackup(event)" class="hidden">
+                    <i class="fa-solid fa-upload text-gray-400 text-xs"></i>
+                </label>
+            </div>
+        </section>
+
+        <!-- 7. Income & Expense (आम्दानी र खर्च) -->
+        <section id="tab-finance" class="space-y-4 tab-section hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+                <h3 class="text-base font-bold text-amber-700"><i class="fa-solid fa-scale-balanced mr-2"></i>आम्दानी र खर्च (Income & Expense)</h3>
+                <button onclick="switchTab('more')" class="text-xs text-gray-500 hover:text-gray-800"><i class="fa-solid fa-arrow-left mr-1"></i>पछाडि</button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                    <label class="block text-gray-500 mb-1">मिति अनुसार (Date)</label>
+                    <input type="text" id="financeDate" onchange="renderFinanceReport()" placeholder="2083-06-03" class="w-full p-2 border rounded bg-gray-50">
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-1">महिना अनुसार (Month)</label>
+                    <input type="text" id="financeMonth" oninput="renderFinanceReport()" placeholder="2083-06" class="w-full p-2 border rounded bg-gray-50">
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                    <p class="text-gray-500 font-medium">कुल आम्दानी</p>
+                    <p id="finTotalIncome" class="font-black text-emerald-700 text-sm mt-1">रु 0</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                    <p class="text-gray-500 font-medium">कुल खर्च</p>
+                    <p id="finTotalExpense" class="font-black text-red-600 text-sm mt-1">रु 0</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <p class="text-gray-500 font-medium">खुद नाफा / बचत</p>
+                    <p id="finNetProfit" class="font-black text-dairy-600 text-sm mt-1">रु 0</p>
+                </div>
+            </div>
+
+            <!-- Add Expense Form -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 space-y-3">
+                <h4 class="text-xs font-bold text-gray-700"><i class="fa-solid fa-plus-circle text-red-600 mr-1"></i>नयाँ खर्च प्रविष्टि (Add Expense)</h4>
+                <form id="expenseForm" onsubmit="saveExpense(event)" class="space-y-2 text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="expDate" required class="p-2 border rounded bg-gray-50">
+                        <input type="number" step="0.5" id="expAmount" required placeholder="रकम (रु)" class="p-2 border rounded bg-gray-50">
+                    </div>
+                    <input type="text" id="expTitle" required placeholder="खर्चको शीर्षक (बिजुली बिल, ढुवानी, दाना, आदि)" class="w-full p-2 border rounded bg-gray-50">
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition shadow">
+                        खर्च सुरक्षित गर्नुहोस्
+                    </button>
+                </form>
+            </div>
+
+            <!-- Transactions List -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h4 class="text-xs font-bold text-gray-700 mb-2">आम्दानी तथा खर्च विवरण सूची</h4>
+                <div id="financeListContainer" class="space-y-2 max-h-72 overflow-y-auto text-xs">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Customer Modal -->
+    <div id="customerModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-5 space-y-3 shadow-xl">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-dairy-600" id="customerModalTitle">नयाँ ग्राहक थप्नुहोस्</h3>
+                <button onclick="closeCustomerModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="saveCustomer(event)" class="space-y-3">
+                <input type="hidden" id="editCustomerId">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">नाम (Name)</label>
+                    <input type="text" id="modalCustName" required placeholder="ग्राहकको नाम" class="w-full p-2.5 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">फोन नम्बर (Phone)</label>
+                    <input type="text" id="modalCustPhone" required placeholder="9841000000" class="w-full p-2.5 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ठेगाना (Address)</label>
+                    <input type="text" id="modalCustAddress" required value="लिखु-६, नुवाकोट" class="w-full p-2.5 border rounded-lg text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">प्रकार (Type)</label>
+                        <select id="modalCustType" class="w-full p-2.5 border rounded-lg text-sm">
+                            <option value="SUPPLIER">बिक्रेता (कृषक)</option>
+                            <option value="BUYER">खरिदकर्ता (ग्राहक)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">पुर्व निर्धारित दर per fat</label>
+                        <input type="number" step="0.5" id="modalCustRate" value="9.5" class="w-full p-2.5 border rounded-lg text-sm">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">
+                    सुरक्षित गर्नुहोस्
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-5 space-y-3 shadow-xl">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-dairy-600">डेरी सेटिंग्स</h3>
+                <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="saveSettings(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">डेरीको नाम (नेपाली)</label>
+                    <input type="text" id="setDairyNameNe" required class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ठेगाना (Address)</label>
+                    <input type="text" id="setDairyAddress" required class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">सञ्चालक</label>
+                        <input type="text" id="setOwnerName" required class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">फोन नम्बर</label>
+                        <input type="text" id="setPhone" required class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+                    सेटिंग्स सेभ गर्नुहोस्
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-40 shadow-lg">
+        <div class="max-w-md mx-auto grid grid-cols-5 text-center py-2">
+            <button onclick="switchTab('home')" id="nav-home" class="nav-btn text-dairy-600 flex flex-col items-center">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px] mt-0.5 font-semibold">गृहपृष्ठ</span>
+            </button>
+            <button onclick="switchTab('milk')" id="nav-milk" class="nav-btn text-gray-400 hover:text-dairy-600 flex flex-col items-center">
+                <i class="fa-solid fa-cow text-lg"></i>
+                <span class="text-[10px] mt-0.5 font-semibold">संकलन</span>
+            </button>
+            <button onclick="switchTab('customers')" id="nav-customers" class="nav-btn text-gray-400 hover:text-dairy-600 flex flex-col items-center">
+                <i class="fa-solid fa-users text-lg"></i>
+                <span class="text-[10px] mt-0.5 font-semibold">ग्राहक</span>
+            </button>
+            <button onclick="switchTab('payment')" id="nav-payment" class="nav-btn text-gray-400 hover:text-dairy-600 flex flex-col items-center">
+                <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
+                <span class="text-[10px] mt-0.5 font-semibold">भुक्तानी</span>
+            </button>
+            <button onclick="switchTab('more')" id="nav-more" class="nav-btn text-gray-400 hover:text-dairy-600 flex flex-col items-center">
+                <i class="fa-solid fa-bars text-lg"></i>
+                <span class="text-[10px] mt-0.5 font-semibold">थप</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- App Logic Script -->
+    <script>
+        let appSettings = JSON.parse(localStorage.getItem('dairy_settings')) || {
+            dairyNameNepali: "शुभकामना डेरी",
+            dairyNameEnglish: "Shubhakamana Dairy",
+            ownerName: "दामोदर अधिकारी",
+            phone: "9841234567",
+            address: "लिखु-६, नुवाकोट (Likhu-6, Nuwakot)"
+        };
+
+        let customers = JSON.parse(localStorage.getItem('dairy_customers')) || [
+            { id: 1, name: "रामबहादुर श्रेष्ठ", phone: "9841882310", address: "लिखु-६, नुवाकोट", customerType: "SUPPLIER", defaultRate: 9.5 },
+            { id: 2, name: "सीता शर्मा", phone: "9851092841", address: "लिखु-६, नुवाकोट", customerType: "SUPPLIER", defaultRate: 9.5 },
+            { id: 3, name: "कृष्ण थापा", phone: "9818456721", address: "लिखु-६, नुवाकोट", customerType: "SUPPLIER", defaultRate: 9.0 },
+            { id: 4, name: "होटल अन्नपूर्ण मिष्ठान्न", phone: "9851123450", address: "लिखु-६, नुवाकोट", customerType: "BUYER", defaultRate: 10.0 }
+        ];
+
+        let milkEntries = JSON.parse(localStorage.getItem('dairy_entries')) || [];
+        let milkSales = JSON.parse(localStorage.getItem('dairy_sales')) || [];
+        let expenses = JSON.parse(localStorage.getItem('dairy_expenses')) || [];
+        let payments = JSON.parse(localStorage.getItem('dairy_payments')) || [];
+        let currentShiftFilter = 'ALL';
+
+        function getNepaliToday() {
+            return "2083-06-06";
+        }
+
+        const todayStr = getNepaliToday();
+        const dayName = 'मंगलबार';
+
+        document.getElementById('entryDate').value = todayStr;
+        document.getElementById('saleDate').value = todayStr;
+        document.getElementById('expDate').value = todayStr;
+        document.getElementById('currentDateStr').innerText = todayStr;
+        document.getElementById('dashDateHeader').innerText = todayStr + " (" + dayName + ")";
+
+        function saveData() {
+            localStorage.setItem('dairy_settings', JSON.stringify(appSettings));
+            localStorage.setItem('dairy_customers', JSON.stringify(customers));
+            localStorage.setItem('dairy_entries', JSON.stringify(milkEntries));
+            localStorage.setItem('dairy_sales', JSON.stringify(milkSales));
+            localStorage.setItem('dairy_expenses', JSON.stringify(expenses));
+            localStorage.setItem('dairy_payments', JSON.stringify(payments));
+            updateUI();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`) || document.getElementById('tab-home');
+            target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-dairy-600');
+                btn.classList.add('text-gray-400');
+            });
+            const navBtn = document.getElementById(`nav-${tabId}`);
+            if (navBtn) {
+                navBtn.classList.remove('text-gray-400');
+                navBtn.classList.add('text-dairy-600');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function setShiftFilter(shift) {
+            currentShiftFilter = shift;
+            if (shift === 'MORNING') {
+                document.getElementById('shiftMorningBtn').className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center space-x-1";
+                document.getElementById('shiftEveningBtn').className = "px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center space-x-1";
+                document.getElementById('entryShift').value = 'MORNING';
+            } else {
+                document.getElementById('shiftEveningBtn').className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center space-x-1";
+                document.getElementById('shiftMorningBtn').className = "px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center space-x-1";
+                document.getElementById('entryShift').value = 'EVENING';
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('headerDairyName').innerText = appSettings.dairyNameNepali;
+            document.getElementById('moreOwnerName').innerText = appSettings.ownerName;
+            document.getElementById('moreOwnerInitial').innerText = appSettings.ownerName ? appSettings.ownerName.charAt(0) : 'द';
+
+            const custOpts = '<option value="">-- ग्राहक छान्नुहोस् --</option>' + customers.map(c => `<option value="${c.id}">${c.name} (${c.customerType === 'SUPPLIER' ? 'बिक्रेता' : 'खरिदकर्ता'})</option>`).join('');
+            document.getElementById('entryCustomer').innerHTML = custOpts;
+            document.getElementById('ledgerCustomer').innerHTML = custOpts;
+
+            // Collection stats
+            const todayEntries = milkEntries.filter(e => e.date === todayStr);
+            const morningEntries = todayEntries.filter(e => e.shift === 'MORNING');
+            const eveningEntries = todayEntries.filter(e => e.shift === 'EVENING');
+
+            const mL = morningEntries.reduce((a, c) => a + c.liters, 0);
+            const eL = eveningEntries.reduce((a, c) => a + c.liters, 0);
+            const totalL = mL + eL;
+            const totalAmt = todayEntries.reduce((a, c) => a + c.totalAmount, 0);
+            const avgFat = todayEntries.length > 0 ? (todayEntries.reduce((a, c) => a + c.fat, 0) / todayEntries.length).toFixed(2) : '4.1';
+
+            // Sales stats
+            const todaySales = milkSales.filter(s => s.date === todayStr);
+            const retailSales = todaySales.filter(s => s.type === 'RETAIL').reduce((a, c) => a + c.liters, 0);
+            const wholesaleSales = todaySales.filter(s => s.type === 'WHOLESALE').reduce((a, c) => a + c.liters, 0);
+            const totalSalesL = retailSales + wholesaleSales;
+
+            document.getElementById('dashTotalLiters').innerText = `${totalL.toFixed(1)} L`;
+            document.getElementById('dashEntriesCount').innerText = `${todayEntries.length} इन्ट्रि`;
+            document.getElementById('dashActiveCustomers').innerText = `${customers.length} जना`;
+            document.getElementById('dashTotalAmount').innerText = `Rs. ${totalAmt.toFixed(0)}`;
+            document.getElementById('dashAvgFat').innerText = `${avgFat}%`;
+
+            // Dashboard Collection breakdown
+            document.getElementById('summaryMorningL').innerText = `${mL.toFixed(1)} L`;
+            document.getElementById('summaryEveningL').innerText = `${eL.toFixed(1)} L`;
+            document.getElementById('summaryTotalL').innerText = `${totalL.toFixed(1)} L`;
+
+            // Dashboard Sales breakdown
+            document.getElementById('summaryRetailL').innerText = `${retailSales.toFixed(1)} L`;
+            document.getElementById('summaryWholesaleL').innerText = `${wholesaleSales.toFixed(1)} L`;
+            document.getElementById('summaryTotalSalesL').innerText = `${totalSalesL.toFixed(1)} L`;
+
+            document.getElementById('customerCountSummary').innerText = `कुल ${customers.length} ग्राहकहरू`;
+
+            // Sales list
+            const salesHtml = milkSales.slice(-5).reverse().map(s => `
+                <div class="flex justify-between items-center p-2.5 bg-gray-50 rounded-lg border">
+                    <div>
+                        <span class="font-bold text-gray-800">${s.buyerName}</span>
+                        <div class="text-gray-500">${s.date} • ${s.type === 'RETAIL' ? '🛍️ खुद्रा' : '📦 होलसेल'} • ${s.liters} L</div>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-bold text-cyan-700">रु ${s.totalAmount.toFixed(2)}</span>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-xs text-gray-400 text-center py-2">कुनै बिक्री रेकर्ड छैन।</p>';
+            document.getElementById('salesListContainer').innerHTML = salesHtml;
+
+            renderCustomers();
+        }
+
+        function calculateAmount() {
+            const custId = parseInt(document.getElementById('entryCustomer').value);
+            const customer = customers.find(c => c.id === custId);
+            const fat = parseFloat(document.getElementById('entryFat').value) || 0;
+            const ratePerFat = customer ? (customer.defaultRate || 0) : 9.5;
+
+            const ratePerLiter = fat * ratePerFat;
+            document.getElementById('entryRate').value = ratePerLiter.toFixed(2);
+
+            const liters = parseFloat(document.getElementById('entryLiters').value) || 0;
+            const total = liters * ratePerLiter;
+            document.getElementById('entryTotal').value = total.toFixed(2);
+        }
+
+        function saveMilkEntry(e) {
+            e.preventDefault();
+            const custId = parseInt(document.getElementById('entryCustomer').value);
+            const customer = customers.find(c => c.id === custId);
+            if (!customer) return;
+
+            const entry = {
+                id: Date.now(),
+                customerId: custId,
+                customerName: customer.name,
+                date: document.getElementById('entryDate').value,
+                shift: document.getElementById('entryShift').value,
+                liters: parseFloat(document.getElementById('entryLiters').value),
+                fat: parseFloat(document.getElementById('entryFat').value) || 0,
+                snf: parseFloat(document.getElementById('entrySnf').value) || 0,
+                ratePerLiter: parseFloat(document.getElementById('entryRate').value),
+                totalAmount: parseFloat(document.getElementById('entryTotal').value)
+            };
+
+            milkEntries.push(entry);
+            saveData();
+            document.getElementById('milkEntryForm').reset();
+            document.getElementById('entryDate').value = todayStr;
+            alert('दूध प्रविष्टि सफलतापूर्वक सेभ भयो!');
+            switchTab('home');
+        }
+
+        function calculateSaleAmount() {
+            const liters = parseFloat(document.getElementById('saleLiters').value) || 0;
+            const rate = parseFloat(document.getElementById('saleRate').value) || 0;
+            document.getElementById('saleTotal').value = (liters * rate).toFixed(2);
+        }
+
+        function saveMilkSale(e) {
+            e.preventDefault();
+            const sale = {
+                id: Date.now(),
+                date: document.getElementById('saleDate').value,
+                type: document.getElementById('saleType').value,
+                buyerName: document.getElementById('saleBuyerName').value,
+                liters: parseFloat(document.getElementById('saleLiters').value),
+                rate: parseFloat(document.getElementById('saleRate').value),
+                totalAmount: parseFloat(document.getElementById('saleTotal').value)
+            };
+            milkSales.push(sale);
+            saveData();
+            document.getElementById('milkSaleForm').reset();
+            document.getElementById('saleDate').value = todayStr;
+            alert('दूध बिक्री सफलतापूर्वक सेभ भयो!');
+            switchTab('home');
+        }
+
+        function renderCustomers() {
+            const query = document.getElementById('customerSearch').value.toLowerCase();
+            const filtered = customers.filter(c => c.name.toLowerCase().includes(query) || c.phone.includes(query));
+
+            const html = filtered.map(c => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border text-xs">
+                    <div>
+                        <span class="font-bold text-gray-800 text-sm">${c.name}</span>
+                        <div class="text-gray-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${c.phone} • <i class="fa-solid fa-location-dot mr-1"></i>${c.address}</div>
+                        <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold ${c.customerType === 'SUPPLIER' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}">
+                            ${c.customerType === 'SUPPLIER' ? 'बिक्रेता (कृषक)' : 'खरिदकर्ता (ग्राहक)'} • Rate/Fat: रु ${c.defaultRate}
+                        </span>
+                    </div>
+                    <div class="flex space-x-1">
+                        <button onclick="editCustomer(${c.id})" class="p-2 text-dairy-600 hover:bg-dairy-50 rounded"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCustomer(${c.id})" class="p-2 text-red-500 hover:bg-red-50 rounded"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-xs text-gray-400 text-center py-4">कुनै ग्राहक भेटिएन।</p>';
+            document.getElementById('customersListContainer').innerHTML = html;
+        }
+
+        function openCustomerModal(id = null) {
+            document.getElementById('editCustomerId').value = '';
+            document.getElementById('modalCustName').value = '';
+            document.getElementById('modalCustPhone').value = '';
+            document.getElementById('modalCustAddress').value = 'लिखु-६, नुवाकोट';
+            document.getElementById('modalCustRate').value = '9.5';
+            document.getElementById('customerModalTitle').innerText = 'नयाँ ग्राहक थप्नुहोस्';
+
+            if (id) {
+                const c = customers.find(x => x.id === id);
+                if (c) {
+                    document.getElementById('editCustomerId').value = c.id;
+                    document.getElementById('modalCustName').value = c.name;
+                    document.getElementById('modalCustPhone').value = c.phone;
+                    document.getElementById('modalCustAddress').value = c.address;
+                    document.getElementById('modalCustType').value = c.customerType;
+                    document.getElementById('modalCustRate').value = c.defaultRate;
+                    document.getElementById('customerModalTitle').innerText = 'ग्राहक विवरण सम्पादन';
+                }
+            }
+            document.getElementById('customerModal').classList.remove('hidden');
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customerModal').classList.add('hidden');
+        }
+
+        function saveCustomer(e) {
+            e.preventDefault();
+            const id = document.getElementById('editCustomerId').value;
+            const data = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('modalCustName').value,
+                phone: document.getElementById('modalCustPhone').value,
+                address: document.getElementById('modalCustAddress').value,
+                customerType: document.getElementById('modalCustType').value,
+                defaultRate: parseFloat(document.getElementById('modalCustRate').value)
+            };
+
+            if (id) {
+                customers = customers.map(c => c.id === parseInt(id) ? data : c);
+            } else {
+                customers.push(data);
+            }
+            saveData();
+            closeCustomerModal();
+        }
+
+        function editCustomer(id) { openCustomerModal(id); }
+        function deleteCustomer(id) {
+            if (confirm('के तपाईं यो ग्राहक मेटाउन चाहनुहुन्छ?')) {
+                customers = customers.filter(c => c.id !== id);
+                saveData();
+            }
+        }
+
+        function loadCustomerLedger() {
+            const custId = parseInt(document.getElementById('ledgerCustomer').value);
+            const detailsDiv = document.getElementById('ledgerDetails');
+            if (!custId) {
+                detailsDiv.classList.add('hidden');
+                return;
+            }
+
+            const customer = customers.find(c => c.id === custId);
+            const custEntries = milkEntries.filter(e => e.customerId === custId);
+            const custPayments = payments.filter(p => p.customerId === custId);
+
+            const totalL = custEntries.reduce((acc, curr) => acc + curr.liters, 0);
+            const totalAmt = custEntries.reduce((acc, curr) => acc + curr.totalAmount, 0);
+            const totalPaid = custPayments.reduce((acc, curr) => acc + curr.amount, 0);
+            const balance = totalAmt - totalPaid;
+
+            document.getElementById('ledgerCustName').innerText = customer.name;
+            document.getElementById('ledgerCustPhone').innerText = `${customer.phone} • ${customer.address}`;
+            document.getElementById('ledgerTotalLiters').innerText = `${totalL.toFixed(1)} L`;
+            document.getElementById('ledgerTotalAmt').innerText = `रु ${totalAmt.toFixed(2)}`;
+            document.getElementById('ledgerBalance').innerText = `रु ${balance.toFixed(2)}`;
+
+            const tableHtml = `
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-dairy-50 text-dairy-600 border-b">
+                            <th class="p-2 text-left">मिति</th>
+                            <th class="p-2 text-left">सिफ्ट</th>
+                            <th class="p-2 text-right">लिटर</th>
+                            <th class="p-2 text-right">Fat</th>
+                            <th class="p-2 text-right">जम्मा (रु)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${custEntries.map(e => `
+                            <tr class="border-b">
+                                <td class="p-2">${e.date}</td>
+                                <td class="p-2">${e.shift === 'MORNING' ? 'बिहान' : 'साँझ'}</td>
+                                <td class="p-2 text-right">${e.liters} L</td>
+                                <td class="p-2 text-right">${e.fat}%</td>
+                                <td class="p-2 text-right font-bold text-dairy-600">${e.totalAmount.toFixed(2)}</td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="5" class="p-4 text-center text-gray-400">कुनै इन्ट्रि छैन।</td></tr>'}
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('ledgerEntriesTable').innerHTML = tableHtml;
+            detailsDiv.classList.remove('hidden');
+        }
+
+        function recordPayment() {
+            const custId = parseInt(document.getElementById('ledgerCustomer').value);
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const notes = document.getElementById('paymentNotes').value;
+
+            if (!amount || isNaN(amount)) {
+                alert('कृपया सही रकम राख्नुहोस्।');
+                return;
+            }
+
+            const customer = customers.find(c => c.id === custId);
+            payments.push({
+                id: Date.now(),
+                customerId: custId,
+                customerName: customer.name,
+                date: todayStr,
+                amount: amount,
+                notes: notes
+            });
+            saveData();
+            document.getElementById('paymentAmount').value = '';
+            document.getElementById('paymentNotes').value = '';
+            loadCustomerLedger();
+            alert('भुक्तानी सफलतापूर्वक रेकर्ड भयो!');
+        }
+
+        function printPdfStatement() {
+            const custId = parseInt(document.getElementById('ledgerCustomer').value);
+            const customer = customers.find(c => c.id === custId);
+            const custEntries = milkEntries.filter(e => e.customerId === custId);
+            const custPayments = payments.filter(p => p.customerId === custId);
+
+            const totalL = custEntries.reduce((acc, curr) => acc + curr.liters, 0);
+            const totalAmt = custEntries.reduce((acc, curr) => acc + curr.totalAmount, 0);
+            const totalPaid = custPayments.reduce((acc, curr) => acc + curr.amount, 0);
+            const balance = totalAmt - totalPaid;
+
+            const dateMap = {};
+            custEntries.forEach(e => {
+                if (!dateMap[e.date]) {
+                    dateMap[e.date] = { date: e.date, moli: 0, mofa: 0, moamt: 0, evli: 0, evfa: 0, evamt: 0, totalAmt: 0 };
+                }
+                if (e.shift === 'MORNING') {
+                    dateMap[e.date].moli += e.liters;
+                    dateMap[e.date].mofa = e.fat;
+                    dateMap[e.date].moamt += e.totalAmount;
+                } else {
+                    dateMap[e.date].evli += e.liters;
+                    dateMap[e.date].evfa = e.fat;
+                    dateMap[e.date].evamt += e.totalAmount;
+                }
+                dateMap[e.date].totalAmt += e.totalAmount;
+            });
+            const groupedEntries = Object.values(dateMap);
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Statement - ${customer.name}</title>
+                    <style>
+                        @page { size: A4; margin: 15mm; @bottom-center { content: "ठेगाना: ${appSettings.address} | फोन: ${appSettings.phone}"; font-size: 10px; color: #555; } }
+                        body { font-family: sans-serif; margin: 0; color: #222; }
+                        .header { text-align: center; border-bottom: 2px solid #006689; padding-bottom: 8px; margin-bottom: 12px; }
+                        .title { font-size: 22px; font-weight: bold; color: #006689; }
+                        .subtitle { font-size: 14px; color: #555; }
+                        .info { font-size: 12px; margin-bottom: 16px; line-height: 1.6; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+                        th, td { border: 1px solid #ccc; padding: 6px; }
+                        th { background-color: #f0f7fb; color: #006689; text-align: center; }
+                        .summary-box { margin-top: 20px; padding: 12px; background: #f8fbfd; border: 1px solid #c2e8ff; border-radius: 6px; font-size: 13px; }
+                        .balance { font-size: 16px; font-weight: bold; color: #b3261e; }
+                        .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; color: #555; border-top: 1px dashed #bbb; padding-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">${appSettings.dairyNameNepali}</div>
+                        <div style="font-size: 16px; color: #2e6b4f; font-weight: 600;">${appSettings.dairyNameEnglish}</div>
+                        <div class="subtitle">ठेगाना: ${appSettings.address} | फोन: ${appSettings.phone}</div>
+                        <div style="font-size: 12px; margin-top: 4px; color: #666;">दूध खरिद-बिक्री हिसाब स्टेटमेन्ट (Milk Account Statement)</div>
+                    </div>
+                    <div class="info">
+                        <strong>ग्राहक/कृषक:</strong> ${customer.name}<br>
+                        <strong>फोन:</strong> ${customer.phone} | <strong>ठेगाना:</strong> ${customer.address}<br>
+                        <strong>खाता प्रकार:</strong> ${customer.customerType === 'SUPPLIER' ? 'दूध बिक्रेता (कृषक)' : 'दूध खरिदकर्ता (ग्राहक)'}
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="vertical-align: middle;">Date</th>
+                                <th colspan="3">बिहान</th>
+                                <th colspan="3">बेलुका</th>
+                                <th rowspan="2" style="vertical-align: middle;">जम्मा</th>
+                            </tr>
+                            <tr><th>लिटर</th><th>Fat</th><th>रकम</th><th>लिटर</th><th>Fat</th><th>रकम</th></tr>
+                        </thead>
+                        <tbody>
+                            ${groupedEntries.map(g => `
+                                <tr>
+                                    <td style="text-align: center;">${g.date}</td>
+                                    <td style="text-align: right;">${g.moli > 0 ? g.moli.toFixed(1) : '-'}</td>
+                                    <td style="text-align: right;">${g.moli > 0 ? g.mofa.toFixed(1) : '-'}</td>
+                                    <td style="text-align: right;">${g.moli > 0 ? g.moamt.toFixed(2) : '-'}</td>
+                                    <td style="text-align: right;">${g.evli > 0 ? g.evli.toFixed(1) : '-'}</td>
+                                    <td style="text-align: right;">${g.evli > 0 ? g.evfa.toFixed(1) : '-'}</td>
+                                    <td style="text-align: right;">${g.evli > 0 ? g.evamt.toFixed(2) : '-'}</td>
+                                    <td style="text-align: right; font-weight: bold; color: #006689;">${g.totalAmt.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="summary-box">
+                        <div>कुल दूध परिमाण: <strong>${totalL.toFixed(1)} लिटर</strong></div>
+                        <div>कुल दूधको मूल्य: <strong>रु ${totalAmt.toFixed(2)}</strong></div>
+                        <div>कुल भुक्तानी भएको: <strong>रु ${totalPaid.toFixed(2)}</strong></div>
+                        <div style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px;">बाँकी हिसाब: <span class="balance">रु ${balance.toFixed(2)}</span></div>
+                    </div>
+                    <div class="footer">
+                        <div>तयार गर्ने: ${appSettings.ownerName} (सञ्चालक)</div>
+                        <div>हस्ताक्षर: _________________</div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => { printWindow.print(); }, 500);
+        }
+
+        function openSettingsModal() {
+            document.getElementById('setDairyNameNe').value = appSettings.dairyNameNepali;
+            document.getElementById('setDairyAddress').value = appSettings.address;
+            document.getElementById('setOwnerName').value = appSettings.ownerName;
+            document.getElementById('setPhone').value = appSettings.phone;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+        function saveSettings(e) {
+            e.preventDefault();
+            appSettings = {
+                dairyNameNepali: document.getElementById('setDairyNameNe').value,
+                dairyNameEnglish: appSettings.dairyNameEnglish,
+                ownerName: document.getElementById('setOwnerName').value,
+                phone: document.getElementById('setPhone').value,
+                address: document.getElementById('setDairyAddress').value
+            };
+            saveData();
+            closeSettingsModal();
+            alert('सेटिंग्स सफल रूपमा सेभ भयो!');
+        }
+
+        function saveExpense(e) {
+            e.preventDefault();
+            const exp = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value)
+            };
+            expenses.push(exp);
+            saveData();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expDate').value = todayStr;
+            alert('खर्च सफलतापूर्वक सेभ भयो!');
+            renderFinanceReport();
+        }
+
+        function renderFinanceReport() {
+            const filterDate = document.getElementById('financeDate').value.trim();
+            const filterMonth = document.getElementById('financeMonth').value.trim();
+
+            let sales = milkSales;
+            let entries = milkEntries;
+            let exps = expenses;
+
+            if (filterDate) {
+                sales = sales.filter(s => s.date === filterDate);
+                entries = entries.filter(e => e.date === filterDate);
+                exps = exps.filter(ex => ex.date === filterDate);
+            } else if (filterMonth) {
+                sales = sales.filter(s => s.date.startsWith(filterMonth));
+                entries = entries.filter(e => e.date.startsWith(filterMonth));
+                exps = exps.filter(ex => ex.date.startsWith(filterMonth));
+            }
+
+            const totalIncome = sales.reduce((a, c) => a + c.totalAmount, 0);
+            const totalMilkPurchase = entries.reduce((a, c) => a + c.totalAmount, 0);
+            const otherExpenses = exps.reduce((a, c) => a + c.amount, 0);
+            const totalExpense = totalMilkPurchase + otherExpenses;
+            const netProfit = totalIncome - totalExpense;
+
+            document.getElementById('finTotalIncome').innerText = `रु ${totalIncome.toFixed(2)}`;
+            document.getElementById('finTotalExpense').innerText = `रु ${totalExpense.toFixed(2)}`;
+            document.getElementById('finNetProfit').innerText = `रु ${netProfit.toFixed(2)}`;
+
+            let html = '';
+            sales.forEach(s => {
+                html += `<div class="flex justify-between items-center p-2 bg-emerald-50 rounded border"><span class="font-bold">🛍️ बिक्री: ${s.buyerName} (${s.date})</span><span class="font-bold text-emerald-700">+ रु ${s.totalAmount.toFixed(2)}</span></div>`;
+            });
+            entries.forEach(e => {
+                html += `<div class="flex justify-between items-center p-2 bg-red-50 rounded border"><span class="font-bold">🥛 दूध खरिद: ${e.customerName} (${e.date})</span><span class="font-bold text-red-600">- रु ${e.totalAmount.toFixed(2)}</span></div>`;
+            });
+            exps.forEach(ex => {
+                html += `<div class="flex justify-between items-center p-2 bg-red-50 rounded border"><span class="font-bold">💸 खर्च: ${ex.title} (${ex.date})</span><span class="font-bold text-red-600">- रु ${ex.amount.toFixed(2)}</span></div>`;
+            });
+
+            document.getElementById('financeListContainer').innerHTML = html || '<p class="text-gray-400 text-center py-4">कुनै रेकर्ड भेटिएन।</p>';
+        }
+
+        function exportBackup() {
+            const data = {
+                settings: appSettings,
+                customers: customers,
+                entries: milkEntries,
+                sales: milkSales,
+                expenses: expenses,
+                payments: payments,
+                backupDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `shubhakamana_dairy_backup_${todayStr}.json`;
+            a.click();
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.settings) appSettings = data.settings;
+                    if (data.customers) customers = data.customers;
+                    if (data.entries) milkEntries = data.entries;
+                    if (data.sales) milkSales = data.sales;
+                    if (data.expenses) expenses = data.expenses;
+                    if (data.payments) payments = data.payments;
+                    saveData();
+                    alert('डेटा सफलतापूर्वक ब्याकअपबाट रिस्टोर (Restore) भयो!');
+                } catch (err) {
+                    alert('अमान्य ब्याकअप फाइल!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err)); });
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "शुभकामना डेरी - Shubhakamana Dairy",
+  "short_name": "Shubhakamana Dairy",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#006689",
+  "icons": [
+    {
+      "src": "app/src/main/res/drawable/ic_dairy_logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "app/src/main/res/drawable/ic_dairy_logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Shubhakamana Dairy",
+  "description": "Dairy milk collection, billing, customer management, and ledger accounting app for Shubhakamana Dairy (शुभकामना डेरी).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
