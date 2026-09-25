@@ -6,6 +6,13 @@
     <title>शुभकामना डेरी - Shubhakamana Dairy</title>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#006689">
+    <link rel="icon" type="image/png" href="./icons/icon-96.png">
+    <link rel="apple-touch-icon" href="./icons/icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="शुभकामना डेरी">
+    <meta name="description" content="दूध संकलन, बिक्री, ग्राहक, भुक्तानी र लेजर व्यवस्थापन गर्ने शुभकामना डेरी एप।">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -19,6 +26,12 @@
             }
         }
     </script>
+    <style>
+        @keyframes lockShake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+        .shake { animation: lockShake .4s ease; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        .fade-up { animation: fadeUp .35s ease both; }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen font-sans pb-24">
     <!-- Top Header -->
@@ -34,6 +47,10 @@
                 </div>
             </div>
             <div class="flex items-center space-x-3">
+                <div id="nepaliClock" class="bg-white/15 border border-white/20 text-yellow-50 px-2 py-1 rounded-lg text-right leading-tight shadow" title="नेपाली समय र मिति (आफैँ अपडेट हुन्छ)">
+                    <span id="clockTime" class="font-bold text-[10px] whitespace-nowrap">⏱ --:--:--</span>
+                    <span id="clockDate" class="block text-[9px] text-yellow-100 font-semibold">--</span>
+                </div>
                 <div class="relative cursor-pointer" onclick="alert('कुनै नयाँ सूचना छैन।')">
                     <i class="fa-regular fa-bell text-lg"></i>
                     <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">3</span>
@@ -50,149 +67,262 @@
 
         <!-- 1. Dashboard (गृहपृष्ठ) -->
         <section id="tab-home" class="space-y-4 tab-section">
-            <!-- Date & Shift Bar -->
-            <div class="flex justify-between items-center bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
-                <div class="text-xs font-bold text-gray-700 flex items-center">
-                    <i class="fa-solid fa-calendar-days text-dairy-600 text-sm mr-2"></i>
-                    <div>
-                        <div id="dashDateHeader">2083-06-06 (मंगलबार)</div>
-                        <div class="text-[10px] text-gray-400 font-normal">(आजको मिति)</div>
-                    </div>
-                </div>
-                <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-semibold">
-                    <button onclick="setShiftFilter('MORNING')" id="shiftMorningBtn" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center space-x-1">
-                        <i class="fa-solid fa-sun text-yellow-300"></i> <span>बिहान</span>
-                    </button>
-                    <button onclick="setShiftFilter('EVENING')" id="shiftEveningBtn" class="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center space-x-1">
-                        <i class="fa-solid fa-moon text-gray-400"></i> <span>साँझ</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4 Metric Cards Grid -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-blue-50/90 p-3.5 rounded-2xl shadow-sm border border-blue-100 relative">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center text-sm shadow">
-                            <i class="fa-solid fa-bottle-droplet"></i>
+            <!-- गृहपृष्ठ Hero: दृश्य banner + नमस्कार + मिति + सिफ्ट -->
+            <div class="relative overflow-hidden rounded-2xl shadow-lg fade-up text-white">
+                <svg viewBox="0 0 800 420" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="heroSky" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#7dd3fc"/>
+                            <stop offset="55%" stop-color="#e0f2fe"/>
+                            <stop offset="100%" stop-color="#ecfdf5"/>
+                        </linearGradient>
+                        <linearGradient id="heroHill1" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#86efac"/><stop offset="100%" stop-color="#4ade80"/>
+                        </linearGradient>
+                        <linearGradient id="heroHill2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#16a34a"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="800" height="420" fill="url(#heroSky)"/>
+                    <circle cx="672" cy="64" r="40" fill="#fde047" opacity="0.95"/>
+                    <circle cx="672" cy="64" r="58" fill="#fde047" opacity="0.35"/>
+                    <path d="M-20 268 L130 138 L250 248 L360 158 L520 268 Z" fill="#b6c7db"/>
+                    <path d="M300 268 L430 150 L540 244 L660 164 L830 268 Z" fill="#9db2ca"/>
+                    <path d="M-20 300 Q 170 214 370 288 T 830 276 V420 H-20 Z" fill="url(#heroHill1)"/>
+                    <path d="M-20 348 Q 210 276 450 334 T 830 324 V420 H-20 Z" fill="url(#heroHill2)"/>
+                    <g id="heroCow" transform="translate(-46,0)">
+                        <rect x="596" y="372" width="14" height="46" rx="7" fill="#1f2937"/>
+                        <rect x="636" y="372" width="14" height="46" rx="7" fill="#1f2937"/>
+                        <rect x="686" y="372" width="14" height="46" rx="7" fill="#1f2937"/>
+                        <rect x="722" y="372" width="14" height="46" rx="7" fill="#1f2937"/>
+                        <path d="M760 330 q 30 8 24 48" stroke="#1f2937" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        <ellipse cx="676" cy="336" rx="92" ry="56" fill="#ffffff" stroke="#1f2937" stroke-width="5"/>
+                        <ellipse cx="648" cy="318" rx="30" ry="21" fill="#1f2937"/>
+                        <ellipse cx="712" cy="352" rx="24" ry="17" fill="#1f2937"/>
+                        <ellipse cx="612" cy="356" rx="19" ry="13" fill="#1f2937"/>
+                        <path d="M602 300 q -30 -34 -6 -58" fill="#ffffff" stroke="#1f2937" stroke-width="5"/>
+                        <ellipse cx="556" cy="286" rx="42" ry="37" fill="#ffffff" stroke="#1f2937" stroke-width="5"/>
+                        <ellipse cx="527" cy="302" rx="23" ry="16" fill="#fca5a5" stroke="#1f2937" stroke-width="4"/>
+                        <circle cx="521" cy="300" r="3.5" fill="#1f2937"/>
+                        <circle cx="533" cy="300" r="3.5" fill="#1f2937"/>
+                        <ellipse cx="576" cy="262" rx="16" ry="9" transform="rotate(-24 576 262)" fill="#e5c8a8" stroke="#1f2937" stroke-width="4"/>
+                        <path d="M540 254 q -10 -16 2 -26" stroke="#1f2937" stroke-width="7" fill="none" stroke-linecap="round"/>
+                        <path d="M566 248 q 4 -16 -6 -24" stroke="#1f2937" stroke-width="7" fill="none" stroke-linecap="round"/>
+                        <circle cx="560" cy="276" r="5" fill="#1f2937"/>
+                    </g>
+                </svg>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent"></div>
+                <div class="relative p-5 flex flex-col gap-3 min-h-[240px]">
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="min-w-0">
+                            <p class="text-sm font-black drop-shadow"><span id="dashGreeting">सुप्रभात 🌅</span> 🇳🇵</p>
+                            <p class="text-xl font-black leading-tight drop-shadow mt-1"><span id="dashOwnerName">सञ्चालक ज्यू</span></p>
+                            <p class="text-[11px] font-semibold text-white/85 mt-0.5 drop-shadow">शुभकामना डेरी • शुद्ध दूध, स्वस्थ जीवन</p>
                         </div>
-                        <span class="text-xs font-bold text-blue-900">आजको दूध संकलन</span>
-                    </div>
-                    <h3 id="dashTotalLiters" class="text-xl font-black text-blue-950 mt-2">0 L</h3>
-                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ संकलन <span id="dashEntriesCount" class="text-gray-500 font-normal">0 इन्ट्रि</span></p>
-                </div>
-
-                <div class="bg-emerald-50/90 p-3.5 rounded-2xl shadow-sm border border-emerald-100 relative">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-sm shadow">
-                            <i class="fa-solid fa-users"></i>
+                        <div class="flex bg-white/95 p-1 rounded-xl text-xs font-semibold shadow-lg shrink-0">
+                            <button onclick="setShiftFilter('MORNING')" id="shiftMorningBtn" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center space-x-1">
+                                <i class="fa-solid fa-sun text-yellow-300"></i> <span>बिहान</span>
+                            </button>
+                            <button onclick="setShiftFilter('EVENING')" id="shiftEveningBtn" class="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center space-x-1">
+                                <i class="fa-solid fa-moon text-gray-400"></i> <span>साँझ</span>
+                            </button>
                         </div>
-                        <span class="text-xs font-bold text-emerald-900">सक्रिय ग्राहक</span>
                     </div>
-                    <h3 id="dashActiveCustomers" class="text-xl font-black text-emerald-950 mt-2">0 जना</h3>
-                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">कृषक तथा खरिदकर्ता</p>
-                </div>
-
-                <div class="bg-amber-50/90 p-3.5 rounded-2xl shadow-sm border border-amber-100 relative">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-amber-500 text-white rounded-xl flex items-center justify-center text-sm shadow">
-                            <i class="fa-solid fa-coins"></i>
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-9 h-9 rounded-xl bg-white/20 ring-1 ring-white/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-calendar-day text-sm"></i></span>
+                        <div class="min-w-0">
+                            <span id="dashDateHeader" class="block text-sm font-black leading-tight drop-shadow">२०८३-०६-०७ (बुधबार)</span>
+                            <span class="text-[10px] text-white/80">आजको दिन शुभ रहोस्!</span>
                         </div>
-                        <span class="text-xs font-bold text-amber-900">आजको रकम</span>
                     </div>
-                    <h3 id="dashTotalAmount" class="text-xl font-black text-amber-950 mt-2">Rs. 0</h3>
-                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">भुक्तानी योग्य मूल्य</p>
-                </div>
-
-                <div class="bg-purple-50/90 p-3.5 rounded-2xl shadow-sm border border-purple-100 relative">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-sm shadow">
-                            <i class="fa-solid fa-droplet"></i>
-                        </div>
-                        <span class="text-xs font-bold text-purple-900">औसत फ्याट</span>
-                    </div>
-                    <h3 id="dashAvgFat" class="text-xl font-black text-purple-950 mt-2">4.1%</h3>
-                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">गुणस्तर मापन</p>
-                </div>
-            </div>
-
-
-
-            <!-- Quick Action Buttons (Without heading text) -->
-            <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
-                <div class="grid grid-cols-4 gap-2 text-center">
-                    <button onclick="switchTab('milk')" class="p-2.5 bg-blue-600 hover:bg-blue-700 rounded-2xl text-white transition flex flex-col items-center shadow-md">
-                        <i class="fa-solid fa-bottle-droplet text-lg mb-1"></i>
-                        <span class="text-[11px] font-bold leading-tight">दूध Entry</span>
-                    </button>
-                    <button onclick="switchTab('customers')" class="p-2.5 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-white transition flex flex-col items-center shadow-md">
-                        <i class="fa-solid fa-user-plus text-lg mb-1"></i>
-                        <span class="text-[11px] font-bold leading-tight">नयाँ ग्राहक</span>
-                    </button>
-                    <button onclick="switchTab('payment')" class="p-2.5 bg-amber-500 hover:bg-amber-600 rounded-2xl text-white transition flex flex-col items-center shadow-md">
-                        <i class="fa-solid fa-coins text-lg mb-1"></i>
-                        <span class="text-[11px] font-bold leading-tight">भुक्तानी</span>
-                    </button>
-                    <button onclick="switchTab('more')" class="p-2.5 bg-purple-600 hover:bg-purple-700 rounded-2xl text-white transition flex flex-col items-center shadow-md">
-                        <i class="fa-solid fa-file-lines text-lg mb-1"></i>
-                        <span class="text-[11px] font-bold leading-tight">विवरण</span>
-                    </button>
-                </div>
-            </div>
-
-
-
-            <!-- Today's Collection Breakdown (बिहान, बेलुका, जम्मा) -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
-                <h4 class="text-xs font-bold text-gray-700">🥛 आजको दूध संकलन (Collection)</h4>
-                <div class="grid grid-cols-3 gap-2 text-center bg-blue-50/50 p-2.5 rounded-xl border border-blue-100">
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-medium">☀️ बिहान</p>
-                        <p id="summaryMorningL" class="text-sm font-bold text-blue-600 mt-0.5">0 L</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-medium">🌙 बेलुका</p>
-                        <p id="summaryEveningL" class="text-sm font-bold text-purple-600 mt-0.5">0 L</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-medium">जम्मा संकलन</p>
-                        <p id="summaryTotalL" class="text-sm font-bold text-dairy-600 mt-0.5">0 L</p>
-                    </div>
-                </div>
-
-                <h4 class="text-xs font-bold text-gray-700 pt-2">🛒 आजको दूध बिक्री (Sales)</h4>
-                <div class="grid grid-cols-3 gap-2 text-center bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-medium">🛍️ खुद्रा (Retail)</p>
-                        <p id="summaryRetailL" class="text-sm font-bold text-emerald-700 mt-0.5">0 L</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-medium">📦 होलसेल (Wholesale)</p>
-                        <p id="summaryWholesaleL" class="text-sm font-bold text-amber-700 mt-0.5">0 L</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-medium">जम्मा बिक्री</p>
-                        <p id="summaryTotalSalesL" class="text-sm font-bold text-emerald-600 mt-0.5">0 L</p>
+                    <div class="flex justify-end gap-2 mt-auto">
+                        <button onclick="switchTab('milk')" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-lg transition active:scale-95 flex items-center gap-1.5">
+                            <i class="fa-solid fa-cow"></i>दूध प्रविष्टि
+                        </button>
+                        <button onclick="switchTab('payment')" class="bg-white/95 hover:bg-white text-dairy-700 font-black px-4 py-2.5 rounded-xl text-xs shadow-lg transition active:scale-95 flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-column"></i>रिपोर्ट
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Pasture & Cow Footer Banner -->
-            <div class="rounded-2xl overflow-hidden shadow-sm border border-emerald-100 bg-gradient-to-t from-emerald-300 via-emerald-100 to-emerald-50 p-3 text-center">
-                <div class="flex justify-between items-center text-emerald-900 text-[11px] font-bold px-2">
-                    <span>🐄 शुभकामना डेरी</span>
-                    <span>शुद्ध दूध • स्वस्थ जीवन</span>
+            <!-- आजको तथ्याङ्क — pastel splash tiles -->
+            <div class="grid grid-cols-2 gap-3 fade-up">
+                <div class="rounded-2xl p-4 relative overflow-hidden shadow-md border border-blue-100 bg-gradient-to-br from-blue-100 via-blue-50 to-white">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-lg shadow-lg shadow-blue-300"><i class="fa-solid fa-bottle-droplet"></i></span>
+                        <span class="text-[11px] font-black text-blue-500 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">01</span>
+                    </div>
+                    <div class="relative z-10 mt-3">
+                        <p class="text-[13px] font-black text-slate-800">आजको कुल संकलन</p>
+                        <p id="dashTotalLiters" class="text-3xl font-black text-slate-900 mt-0.5 tabular-nums drop-shadow-sm">0 L</p>
+                        <p id="dashEntriesCount" class="text-[10px] font-semibold text-slate-500 mt-1">0 इन्ट्रि</p>
+                    </div>
+                    <i class="fa-solid fa-bottle-droplet absolute -right-4 -bottom-5 text-blue-200 text-8xl rotate-12 z-0"></i>
                 </div>
-                <div class="mt-2 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-inner">
-                    🏔️ 🌿 🐄 🌾 🥛 🏔️
+                <div class="rounded-2xl p-4 relative overflow-hidden shadow-md border border-emerald-100 bg-gradient-to-br from-emerald-100 via-emerald-50 to-white">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-500 to-green-700 text-white flex items-center justify-center text-lg shadow-lg shadow-emerald-300"><i class="fa-solid fa-users"></i></span>
+                        <span class="text-[11px] font-black text-emerald-600 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">02</span>
+                    </div>
+                    <div class="relative z-10 mt-3">
+                        <p class="text-[13px] font-black text-slate-800">सक्रिय ग्राहक</p>
+                        <p id="dashActiveCustomers" class="text-3xl font-black text-slate-900 mt-0.5 tabular-nums drop-shadow-sm">0 जना</p>
+                        <p class="text-[10px] font-semibold text-slate-500 mt-1">कृषक तथा खरिदकर्ता</p>
+                    </div>
+                    <i class="fa-solid fa-users absolute -right-3 -bottom-4 text-emerald-200 text-8xl rotate-6 z-0"></i>
                 </div>
+                <div class="rounded-2xl p-4 relative overflow-hidden shadow-md border border-amber-100 bg-gradient-to-br from-amber-100 via-amber-50 to-white">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-lg shadow-lg shadow-amber-300"><i class="fa-solid fa-coins"></i></span>
+                        <span class="text-[11px] font-black text-amber-600 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">03</span>
+                    </div>
+                    <div class="relative z-10 mt-3">
+                        <p class="text-[13px] font-black text-slate-800">आजको रकम</p>
+                        <p id="dashTotalAmount" class="text-3xl font-black text-slate-900 mt-0.5 tabular-nums drop-shadow-sm">Rs. 0</p>
+                        <p class="text-[10px] font-semibold text-slate-500 mt-1">दुधको बिक्रीबाट प्राप्त</p>
+                    </div>
+                    <i class="fa-solid fa-coins absolute -right-3 -bottom-4 text-amber-200 text-8xl rotate-6 z-0"></i>
+                </div>
+                <div class="rounded-2xl p-4 relative overflow-hidden shadow-md border border-purple-100 bg-gradient-to-br from-purple-100 via-fuchsia-50 to-white">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white flex items-center justify-center text-lg shadow-lg shadow-purple-300"><i class="fa-solid fa-droplet"></i></span>
+                        <span class="text-[11px] font-black text-purple-500 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">04</span>
+                    </div>
+                    <div class="relative z-10 mt-3">
+                        <p class="text-[13px] font-black text-slate-800">औसत फ्याट</p>
+                        <p id="dashAvgFat" class="text-3xl font-black text-slate-900 mt-0.5 tabular-nums drop-shadow-sm">4.1%</p>
+                        <p class="text-[10px] font-semibold text-slate-500 mt-1">गुणस्तर मापन</p>
+                    </div>
+                    <i class="fa-solid fa-droplet absolute -right-3 -bottom-4 text-purple-200 text-8xl rotate-12 z-0"></i>
+                </div>
+            </div>
+
+
+
+            <!-- छिटो कार्य (Quick Actions) -->
+            <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-5 space-y-3 fade-up">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-500 text-lg"></i> छिटो कार्य
+                    </h3>
+                    <span class="text-[10px] text-gray-400 font-semibold">Quick Actions</span>
+                </div>
+                <div class="grid grid-cols-5 gap-1.5">
+                    <button onclick="switchTab('milk')" class="p-2 rounded-xl hover:-translate-y-1 hover:shadow-lg transition flex flex-col items-center gap-1.5 active:scale-95">
+                        <span class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-bottle-droplet"></i></span>
+                        <span class="text-[9.5px] font-bold text-gray-700 leading-tight text-center">दूध प्रविष्टि</span>
+                    </button>
+                    <button onclick="switchTab('sales')" class="p-2 rounded-xl hover:-translate-y-1 hover:shadow-lg transition flex flex-col items-center gap-1.5 active:scale-95">
+                        <span class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg"><i class="fa-solid fa-cart-shopping"></i></span>
+                        <span class="text-[9.5px] font-bold text-gray-700 leading-tight text-center">बिक्री</span>
+                    </button>
+                    <button onclick="switchTab('customers')" class="p-2 rounded-xl hover:-translate-y-1 hover:shadow-lg transition flex flex-col items-center gap-1.5 active:scale-95">
+                        <span class="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg"><i class="fa-solid fa-user-plus"></i></span>
+                        <span class="text-[9.5px] font-bold text-gray-700 leading-tight text-center">नयाँ ग्राहक</span>
+                    </button>
+                    <button onclick="switchTab('payment')" class="p-2 rounded-xl hover:-translate-y-1 hover:shadow-lg transition flex flex-col items-center gap-1.5 active:scale-95">
+                        <span class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-lg"><i class="fa-solid fa-coins"></i></span>
+                        <span class="text-[9.5px] font-bold text-gray-700 leading-tight text-center">भुक्तानी</span>
+                    </button>
+                    <button onclick="switchTab('more')" class="p-2 rounded-xl hover:-translate-y-1 hover:shadow-lg transition flex flex-col items-center gap-1.5 active:scale-95">
+                        <span class="w-12 h-12 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-lg"><i class="fa-solid fa-file-lines"></i></span>
+                        <span class="text-[9.5px] font-bold text-gray-700 leading-tight text-center">विवरण</span>
+                    </button>
+                </div>
+            </div>
+
+
+
+            <!-- आजको संकलन र बिक्री (Collection & Sales) -->
+            <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden fade-up">
+                <div class="bg-gradient-to-r from-dairy-600 to-dairy-700 px-4 py-3 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="w-8 h-8 rounded-full bg-white/20 ring-1 ring-white/30 flex items-center justify-center text-white text-sm shrink-0"><i class="fa-solid fa-cow"></i></span>
+                        <h3 class="font-black text-white text-sm truncate">आजको दूध संकलन <span class="text-[10px] font-medium text-white/70 font-normal">(Collection)</span></h3>
+                    </div>
+                    <span class="bg-white text-dairy-700 text-[10px] font-black px-3 py-1.5 rounded-full shadow flex items-center gap-1 shrink-0">आज <i class="fa-solid fa-chevron-right text-[8px]"></i></span>
+                </div>
+                <div class="p-4 space-y-3">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
+                        <div>
+                            <p class="text-[10px] text-blue-600 font-bold"><i class="fa-solid fa-droplet mr-1"></i>बिहान</p>
+                            <p id="summaryMorningL" class="text-lg font-black text-blue-700 mt-0.5 tabular-nums">0 L</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-indigo-600 font-bold"><i class="fa-solid fa-moon mr-1"></i>बेलुका</p>
+                            <p id="summaryEveningL" class="text-lg font-black text-indigo-700 mt-0.5 tabular-nums">0 L</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-emerald-600 font-bold">जम्मा संकलन</p>
+                            <p id="summaryTotalL" class="text-lg font-black text-emerald-700 mt-0.5 tabular-nums">0 L</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t border-gray-100 pt-3">
+                        <h3 class="font-black text-slate-800 text-sm flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-coins"></i></span>
+                            आजको दूध बिक्री <span class="text-[10px] font-medium text-gray-400 font-normal">(Sales)</span>
+                        </h3>
+                        <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-calendar-day text-[8px]"></i>आज</span>
+                    </div>
+                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-100 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
+                        <div>
+                            <p class="text-[10px] text-emerald-600 font-bold"><i class="fa-solid fa-bag-shopping mr-1"></i>खुद्रा</p>
+                            <p id="summaryRetailL" class="text-lg font-black text-emerald-700 mt-0.5 tabular-nums">0 L</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-amber-600 font-bold"><i class="fa-solid fa-box mr-1"></i>होलसेल</p>
+                            <p id="summaryWholesaleL" class="text-lg font-black text-amber-700 mt-0.5 tabular-nums">0 L</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-purple-600 font-bold">जम्मा बिक्री</p>
+                            <p id="summaryTotalSalesL" class="text-lg font-black text-purple-700 mt-0.5 tabular-nums">0 L</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-3 flex justify-between items-center">
+                        <span class="text-xs font-bold text-gray-700"><i class="fa-solid fa-file-invoice text-dairy-600 mr-1.5"></i>आजको बिक्री रेकर्ड</span>
+                        <span id="homeSalesAmount" class="text-xs font-black text-white bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1.5 rounded-full shadow">रु 0.00</span>
+                    </div>
+                    <div id="homeSalesList" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px]">
+                        <p class="text-gray-400 text-center py-1">आज अहिलेसम्म कुनै बिक्री छैन।</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ब्रान्ड फुटर -->
+            <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-4 flex items-center justify-between fade-up">
+                <div class="flex items-center space-x-2.5 min-w-0">
+                    <span class="w-10 h-10 bg-gradient-to-br from-dairy-600 to-dairy-700 text-white rounded-full flex items-center justify-center text-base shadow-lg shrink-0"><i class="fa-solid fa-cow"></i></span>
+                    <div class="min-w-0">
+                        <p id="homeBrandName" class="text-sm font-black text-slate-800 truncate">शुभकामना डेरी</p>
+                        <p class="text-[10px] text-gray-400 font-semibold">गुणस्तरीय दूध, समृद्ध किसान</p>
+                    </div>
+                </div>
+                <span class="text-[9px] font-bold text-dairy-700 bg-dairy-50 px-2.5 py-1 rounded-full ring-1 ring-dairy-100 shrink-0 ml-2 flex items-center gap-1"><i class="fa-solid fa-wifi"></i>PWA • Offline तयार</span>
+            </div>
+
+            <!-- गाउँ-दृश्य फुटर स्ट्रिप -->
+            <div class="rounded-2xl overflow-hidden shadow-sm h-14 fade-up">
+                <svg viewBox="0 0 800 100" preserveAspectRatio="none" class="w-full h-full block" aria-hidden="true">
+                    <rect width="800" height="100" fill="#e0f2fe"/>
+                    <circle cx="716" cy="24" r="15" fill="#fde047"/>
+                    <path d="M0 62 Q 160 14 360 52 T 800 46 V100 H0 Z" fill="#86efac"/>
+                    <path d="M0 80 Q 240 44 500 74 T 800 72 V100 H0 Z" fill="#22c55e"/>
+                    <path d="M0 94 Q 300 72 560 90 T 800 88 V100 H0 Z" fill="#15803d"/>
+                    <circle cx="120" cy="70" r="3" fill="#ffffff"/>
+                    <circle cx="260" cy="83" r="3" fill="#fde047"/>
+                    <circle cx="540" cy="86" r="3" fill="#ffffff"/>
+                    <circle cx="660" cy="78" r="3" fill="#fef08a"/>
+                </svg>
             </div>
         </section>
 
         <!-- 2. Milk Collection Entry (संकलन) -->
         <section id="tab-milk" class="space-y-4 tab-section hidden">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-base font-bold text-dairy-600 mb-3"><i class="fa-solid fa-cow mr-2"></i>दूध Entry (Milk Collection)</h3>
+                <h3 class="text-base font-bold text-dairy-600 mb-3"><i class="fa-solid fa-cow mr-2"></i>दूध प्रविष्टि (Milk Collection)</h3>
                 <form id="milkEntryForm" onsubmit="saveMilkEntry(event)" class="space-y-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">ग्राहक / कृषक छान्नुहोस्</label>
@@ -249,41 +379,112 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-base font-bold text-cyan-700 mb-3"><i class="fa-solid fa-cart-shopping mr-2"></i>दूध बिक्री प्रविष्टि (Milk Sales)</h3>
                 <form id="milkSaleForm" onsubmit="saveMilkSale(event)" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
+                    <!-- मिति (बायाँ) + होलसेल/खुद्रा ट्याब (दायाँ) -->
+                    <div class="flex items-end gap-2">
+                        <div class="w-1/2 min-w-0">
                             <label class="block text-xs font-medium text-gray-600 mb-1">मिति (Date)</label>
-                            <input type="text" id="saleDate" required class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                            <input type="text" id="saleDate" required placeholder="2083-06-07" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
                         </div>
+                        <div class="w-1/2 min-w-0">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">बिक्रीको विकल्प</label>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button type="button" id="saleModeBuyerBtn" onclick="setSaleMode('BUYER')" class="py-2.5 rounded-lg text-[11px] font-bold transition bg-cyan-700 text-white shadow">
+                                    📦 होलसेल
+                                </button>
+                                <button type="button" id="saleModeRetailBtn" onclick="setSaleMode('RETAIL')" class="py-2.5 rounded-lg text-[11px] font-bold transition bg-gray-100 text-gray-500 hover:bg-gray-200">
+                                    🛍️ खुद्रा
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="saleMode" value="BUYER">
+
+                    <!--खरिदकर्ता (Buyer) — दूधको लिटर / फ्याट -->
+                    <!-- होलसेल: पहिले खरिदकर्ता नाम मात्र -->
+                    <div id="saleBuyerGroup" class="space-y-3">
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">बिक्री प्रकार (Type)</label>
-                            <select id="saleType" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
-                                <option value="RETAIL">🛍️ खुद्रा (Retail)</option>
-                                <option value="WHOLESALE">📦 होलसेल (Wholesale)</option>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">खरिदकर्ता छान्नुहोस्</label>
+                            <select id="saleBuyer" onchange="updateSaleVisibility()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="">-- खरिदकर्ता छान्नुहोस् --</option>
                             </select>
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">खरिदकर्ता / पसलको नाम</label>
-                        <input type="text" id="saleBuyerName" required placeholder="ग्राहक वा होटलको नाम" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">लिटर (Liters)</label>
-                            <input type="number" step="0.1" id="saleLiters" required placeholder="0.0" oninput="calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">दर (रु/लिटर)</label>
-                            <input type="number" step="0.5" id="saleRate" required placeholder="95.0" oninput="calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">जम्मा (रु)</label>
-                            <input type="number" step="0.1" id="saleTotal" readonly class="w-full p-2.5 border rounded-lg text-sm bg-gray-100 font-bold text-cyan-700">
+                        <div id="saleBuyerOtherWrap" class="hidden">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">खरिदकर्ताको नाम</label>
+                            <input type="text" id="saleBuyerOther" placeholder="पसल / होटलको नाम" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
-                        <i class="fa-solid fa-check mr-2"></i>बिक्री सुरक्षित गर्नुहोस्
-                    </button>
+
+                    <!-- खरिदकर्ता छानिएपछि मात्र: दूधको लिटर / फ्याट -->
+                    <div id="saleWholesaleDetails" class="grid grid-cols-2 gap-3 hidden">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">दूधको लिटर (Liters)</label>
+                            <input type="number" step="0.1" id="saleLiters" placeholder="0.0" oninput="calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">फ्याट % (Fat)</label>
+                            <input type="number" step="0.1" id="saleFat" placeholder="4.2" oninput="updateSaleRateFromBuyer()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                    </div>
+
+                    <!--खुद्रा (Retail) — वस्तु / मात्रा -->
+                    <div id="saleRetailGroup" class="space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">वस्तु छान्नुहोस् (Item)</label>
+                            <select id="saleItem" onchange="updateSaleUnit(); calculateSaleAmount();" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="DUDH">🥛 दूध (Milk)</option>
+                                <option value="DAHI">🥣 दही (Yogurt)</option>
+                                <option value="GHEE">🫙 घी (Ghee)</option>
+                                <option value="PANEER">🧀 पनिर (Paneer)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">मात्रा (Quantity) — <span id="saleUnit">लिटर</span></label>
+                            <input type="number" step="0.1" id="saleQty" placeholder="0.0" oninput="calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">ग्राहकको नाम (चाहेमा मात्र)</label>
+                            <input type="text" id="saleRetailName" placeholder="क्रेडिटमा बिक्री भए ग्राहकको नाम लेख्नुहोस्" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        </div>
+                    </div>
+
+                    <!-- दर / जम्मा / भुक्तानी / सेभ — होलसेलमा खरिदकर्ता छानेपछि मात्र -->
+                    <div id="saleAmountBlock" class="space-y-3 hidden">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">दर (रु)<span id="saleRateHint" class="block text-[9px] text-cyan-700 font-normal leading-tight mt-0.5"></span></label>
+                                <input type="number" step="0.01" id="saleRate" placeholder="95.0" oninput="document.getElementById('saleRateHint').innerText=''; calculateSaleAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">जम्मा रकम (रु)</label>
+                                <input type="number" step="0.1" id="saleTotal" readonly class="w-full p-2.5 border rounded-lg text-sm bg-gray-100 font-bold text-cyan-700">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">भुक्तानी (Payment)</label>
+                            <select id="salePayment" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="CASH">💵 क्यास (Cash)</option>
+                                <option value="CREDIT">📝 क्रेडिट (Credit)</option>
+                                <option value="BANK">🏦 बैंक ट्रान्सफर (Bank)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+                            <i class="fa-solid fa-check mr-2"></i>बिक्री सुरक्षित गर्नुहोस्
+                        </button>
+                    </div>
                 </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h4 class="text-xs font-bold text-gray-700 mb-1"><i class="fa-solid fa-print mr-1"></i>मिति अनुसार रिपोर्ट प्रिन्ट</h4>
+                <p class="text-[11px] text-gray-400 mb-3">माथिको <b>मिति</b> छानेर त्यही दिनको होलसेल / खुद्रा बिक्री रिपोर्ट निकाल्नुहोस्।</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="printSalesReport('WHOLESALE')" class="bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+                        📦 होलसेल रिपोर्ट
+                    </button>
+                    <button type="button" onclick="printSalesReport('RETAIL')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+                        🛍️ खुद्रा रिपोर्ट
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -315,26 +516,62 @@
             </div>
         </section>
 
-        <!-- 5. Payment / Statement (भुक्तानी) -->
+        <!-- 5. Payment / Statement (भुक्तानी) + मासिक पूर्ण विवरण -->
         <section id="tab-payment" class="space-y-4 tab-section hidden">
+            <!-- मासिक पूर्ण विवरण: साल र महिना छान्दाखर्च/आम्दानीको पूरारिपोर्ट -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-base font-bold text-dairy-600"><i class="fa-solid fa-calendar-days mr-2"></i>मासिक पूर्ण विवरण</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block text-gray-500 mb-1">साल (Year)</label>
+                        <select id="repYear" onchange="renderMonthlyReport()" class="w-full p-2 border rounded bg-gray-50"></select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 mb-1">महिना (Month)</label>
+                        <select id="repMonth" onchange="renderMonthlyReport()" class="w-full p-2 border rounded bg-gray-50"></select>
+                    </div>
+                </div>
+                <div id="monthlyReportBox" class="space-y-2"></div>
+                <button onclick="printMonthlyReport()" class="w-full bg-dairy-600 hover:bg-dairy-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
+                    <i class="fa-solid fa-print mr-1.5"></i> प्रिन्ट रिपोर्ट (नेपाली क्यालेन्डर अनुसार)
+                </button>
+            </div>
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-base font-bold text-dairy-600 mb-3"><i class="fa-solid fa-hand-holding-dollar mr-2"></i>भुक्तानी तथा स्टेटमेन्ट (Payment)</h3>
                 <div class="space-y-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">ग्राहक छान्नुहोस्</label>
-                        <select id="ledgerCustomer" onchange="loadCustomerLedger()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                        <select id="ledgerCustomer" onchange="loadCustomerLedger(true)" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
                             <option value="">-- ग्राहक छान्नुहोस् --</option>
                         </select>
                     </div>
                     <div id="ledgerDetails" class="hidden space-y-3 pt-2 border-t">
-                        <div class="bg-dairy-50 p-3 rounded-lg flex justify-between items-center">
+                        <div class="bg-dairy-50 p-3 rounded-lg space-y-2">
                             <div>
                                 <p id="ledgerCustName" class="font-bold text-sm text-gray-800">रामबहादुर श्रेष्ठ</p>
                                 <p id="ledgerCustPhone" class="text-xs text-gray-500">9841882310 • लिखु-६, नुवाकोट</p>
                             </div>
-                            <button onclick="printPdfStatement()" class="bg-dairy-600 hover:bg-dairy-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center">
-                                <i class="fa-solid fa-print mr-1.5"></i> प्रिन्ट PDF
-                            </button>
+                            <div class="border-t border-dairy-100 pt-2">
+                                <p class="text-[10px] font-bold text-dairy-600 mb-1"><i class="fa-regular fa-calendar-days mr-1"></i>प्रिन्ट मिति सीमा (खाली राखे = सबै मिति)</p>
+                                <div class="flex items-end gap-2">
+                                    <div class="flex-1 min-w-0">
+                                        <label for="ledgerFrom" class="block text-[10px] text-gray-500 mb-0.5">देखि (From)</label>
+                                        <input type="text" id="ledgerFrom" placeholder="2083-06-01" oninput="loadCustomerLedger()" class="w-full p-1.5 border rounded text-xs bg-white">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <label for="ledgerTo" class="block text-[10px] text-gray-500 mb-0.5">सम्म (To)</label>
+                                        <input type="text" id="ledgerTo" placeholder="2083-06-07" oninput="loadCustomerLedger()" class="w-full p-1.5 border rounded text-xs bg-white">
+                                    </div>
+                                    <button type="button" onclick="clearLedgerDateRange()" title="सीमा हटाउनुहोस् (सबै मिति)" class="px-2 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 bg-white border rounded">
+                                        ✕
+                                    </button>
+                                </div>
+                                <button onclick="printPdfStatement()" class="w-full mt-2 bg-dairy-600 hover:bg-dairy-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center justify-center">
+                                    <i class="fa-solid fa-print mr-1.5"></i> प्रिन्ट PDF (सीमा अनुसार)
+                                </button>
+                            </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 text-center text-xs">
                             <div class="bg-gray-50 p-2.5 rounded border">
@@ -361,7 +598,16 @@
                             </button>
                         </div>
                         <div>
-                            <h5 class="text-xs font-bold text-gray-700 mb-2">कारोबार विवरण</h5>
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <h5 class="text-xs font-bold text-gray-700">कारोबार विवरण <span id="ledgerRangeChip" class="hidden text-[10px] font-semibold bg-dairy-100 text-dairy-600 px-1.5 py-0.5 rounded"></span></h5>
+                                <div class="flex items-center space-x-1.5">
+                                    <label for="ledgerDateFilter" class="text-[10px] text-gray-500 font-medium">मिति:</label>
+                                    <select id="ledgerDateFilter" onchange="loadCustomerLedger()" class="p-1.5 border rounded text-[11px] bg-white text-gray-700">
+                                        <option value="">सबै मिति</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mb-2">गलत डाटा ठीक गर्न ✏️ सम्पादन बटन थिच्नुहोस्। माथि मिति सीमा दिएमा त्यही सीमाको मात्र प्रिन्ट हुन्छ।</p>
                             <div id="ledgerEntriesTable" class="overflow-x-auto text-xs">
                                 <!-- Dynamic -->
                             </div>
@@ -385,6 +631,14 @@
                 </div>
                 <span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-semibold">सक्रिय</span>
             </div>
+            <!-- PWA: एप इन्स्टल कार्ड -->
+            <div id="installCard" class="bg-gradient-to-r from-dairy-600 to-dairy-700 text-white p-4 rounded-xl shadow-md flex items-center justify-between space-x-3">
+                <div class="min-w-0">
+                    <p id="installCardTitle" class="font-bold text-sm"><i class="fa-solid fa-mobile-screen-button mr-1"></i>📱 एप इन्स्टल गर्नुहोस्</p>
+                    <p id="installCardDesc" class="text-[11px] text-dairy-100 mt-0.5">होम स्क्रिनमा जोड्नुहोस् — इन्टरनेट बिना पनि खुल्छ।</p>
+                </div>
+                <button id="installCardBtn" onclick="installApp()" class="shrink-0 bg-white text-dairy-700 text-xs font-bold px-3 py-2 rounded-lg shadow active:scale-95 transition">इन्स्टल गर्नुहोस्</button>
+            </div>
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y">
                 <button onclick="switchTab('finance'); renderFinanceReport();" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
                     <span class="flex items-center text-gray-700"><i class="fa-solid fa-scale-balanced text-amber-600 w-6"></i> आम्दानी र खर्च (Income & Expense)</span>
@@ -396,6 +650,10 @@
                 </button>
                 <button onclick="openSettingsModal()" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
                     <span class="flex items-center text-gray-700"><i class="fa-solid fa-gear text-dairy-600 w-6"></i> डेरी सेटिंग्स (नाम, ठेगाना, फोन)</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                </button>
+                <button onclick="lockNow()" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
+                    <span class="flex items-center text-gray-700"><i class="fa-solid fa-lock text-red-500 w-6"></i> एप अहिले लक गर्नुहोस् (Lock Now)</span>
                     <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
                 </button>
                 <button onclick="exportBackup()" class="w-full p-3.5 text-left flex justify-between items-center hover:bg-gray-50 transition text-sm">
@@ -498,6 +756,7 @@
                             <option value="SUPPLIER">बिक्रेता (कृषक)</option>
                             <option value="BUYER">खरिदकर्ता (ग्राहक)</option>
                         </select>
+                        <p class="text-[10px] text-gray-400 mt-1 leading-snug">"खरिदकर्ता" छानेर थपेका ग्राहक होलसेल बिक्रीको खरिदकर्ता dropdown मा मात्र देखिन्छन्।</p>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">पुर्व निर्धारित दर per fat</label>
@@ -541,6 +800,154 @@
                     सेटिंग्स सेभ गर्नुहोस्
                 </button>
             </form>
+
+            <!-- एप पासवर्ड (App Lock) -->
+            <div class="pt-3 border-t border-gray-100 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold text-gray-700"><i class="fa-solid fa-shield-halved text-dairy-600 mr-1.5"></i>एप पासवर्ड (App Lock)</h4>
+                    <span id="pwdStatus" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">अक्षम</span>
+                </div>
+                <p class="text-[10px] text-gray-400 leading-relaxed">पासवर्ड सेट गरेपछि एप हरेक पटक खोल्दा लक स्क्रिन देखिन्छ। कम्तीमा ४ अक्षर आवश्यक।</p>
+                <div id="pwdCurrentWrap" class="hidden">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">हालको पासवर्ड</label>
+                    <input type="password" id="pwdCurrent" placeholder="हालको पासवर्ड" autocomplete="current-password" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">नयाँ पासवर्ड</label>
+                        <input type="password" id="pwdNew" placeholder="••••" autocomplete="new-password" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">पुष्टि गर्नुहोस्</label>
+                        <input type="password" id="pwdConfirm" placeholder="••••" autocomplete="new-password" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="setAppPassword()" class="flex-1 bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+                        <i class="fa-solid fa-key mr-1"></i>पासवर्ड सेट गर्नुहोस्
+                    </button>
+                    <button type="button" id="pwdRemoveBtn" onclick="removeAppPassword()" class="hidden flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 rounded-lg text-xs transition ring-1 ring-red-100">
+                        <i class="fa-solid fa-trash-can mr-1"></i>हटाउनुहोस्
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry Edit Modal (गलत डाटा सम्पादन) -->
+    <div id="entryEditModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-5 space-y-3 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-dairy-600">प्रविष्टि सम्पादन (Edit Entry)</h3>
+                <button onclick="closeEntryEditModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="saveEntryEdit(event)" class="space-y-3">
+                <input type="hidden" id="editEntryId">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ग्राहक / कृषक</label>
+                    <select id="editEntryCustomer" required onchange="calculateEditAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">मिति (Date)</label>
+                        <input type="text" id="editEntryDate" required placeholder="2083-06-07" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">सिफ्ट (Shift)</label>
+                        <select id="editEntryShift" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                            <option value="MORNING">☀️ बिहान (Morning)</option>
+                            <option value="EVENING">🌙 साँझ (Evening)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">लिटर (Liters)</label>
+                        <input type="number" step="0.1" id="editEntryLiters" required oninput="recalcEditTotal()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">फ्याट % (Fat)</label>
+                        <input type="number" step="0.1" id="editEntryFat" oninput="calculateEditAmount()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">SNF %</label>
+                        <input type="number" step="0.1" id="editEntrySnf" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">प्रति लिटर दर (रु)</label>
+                        <input type="number" step="0.5" id="editEntryRate" oninput="recalcEditTotal()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">जम्मा रकम (रु)</label>
+                        <input type="number" step="0.1" id="editEntryTotal" readonly class="w-full p-2.5 border rounded-lg text-sm bg-gray-100 font-bold text-dairy-600">
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button type="submit" class="flex-1 bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+                        <i class="fa-solid fa-check mr-2"></i>परिवर्तन सेभ गर्नुहोस्
+                    </button>
+                    <button type="button" onclick="closeEntryEditModal()" class="px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg text-sm transition">
+                        रद्द
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PWA: इन्स्टल ब्यानर (beforeinstallprompt आएपछि मात्र देखिन्छ) -->
+    <div id="installBanner" class="hidden fixed bottom-16 left-3 right-3 z-40 max-w-md mx-auto bg-dairy-700 text-white rounded-xl shadow-lg px-4 py-3 flex items-center justify-between space-x-3">
+        <span class="text-xs font-semibold"><i class="fa-solid fa-mobile-screen-button mr-1"></i>शुभकामना डेरी एप इन्स्टल गर्नुहोस्</span>
+        <span class="flex items-center space-x-2 shrink-0">
+            <button onclick="installApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">इन्स्टल</button>
+            <button onclick="dismissInstallBanner()" class="text-dairy-100 hover:text-white text-sm px-1" aria-label="बन्द गर्नुहोस्">✕</button>
+        </span>
+    </div>
+
+    <!-- PWA: iOS (iPhone Safari) — Add to Home Screen तरिका -->
+    <div id="iosInstallModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-gray-800 text-base"><i class="fa-solid fa-mobile-screen-button text-dairy-600 mr-2"></i>iPhone मा एप जोड्नुहोस्</h3>
+                <button onclick="closeIosInstallHelp()" class="text-gray-400 hover:text-gray-700 text-lg leading-none px-1" aria-label="बन्द गर्नुहोस्">✕</button>
+            </div>
+            <ol class="space-y-2.5 text-sm text-gray-700 list-decimal list-inside">
+                <li><b>Safari</b> ब्राउजरमा यो एप खोल्नुहोस्</li>
+                <li>तलको <b>Share बटन ⬆️</b> थिच्नुहोस्</li>
+                <li><b>"Add to Home Screen"</b> खोजेर छान्नुहोस्</li>
+                <li>माथि <b>"Add"</b> थिच्नुहोस् — एप होम स्क्रिनमा जुर्छ! 🎉</li>
+            </ol>
+            <p class="text-[11px] text-gray-400 mt-3">सुझाव: iOS मा इन्स्टल ब्राउजरको मेनुबाट मात्र सम्भव हुन्छ।</p>
+            <button onclick="closeIosInstallHelp()" class="w-full mt-4 bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-2.5 rounded-xl text-sm transition">बुझें</button>
+        </div>
+    </div>
+
+    <!-- App Lock Screen (पासवर्ड लक) -->
+    <div id="lockScreen" class="hidden fixed inset-0 z-[120] bg-gradient-to-b from-dairy-700 via-dairy-600 to-dairy-700 flex items-center justify-center p-6">
+        <div class="absolute -top-16 -right-12 w-52 h-52 rounded-full bg-white/10 pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-14 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></div>
+        <div id="lockCard" class="relative w-full max-w-xs bg-white rounded-3xl shadow-2xl p-6 text-center space-y-4 fade-up">
+            <div class="mx-auto w-16 h-16 bg-dairy-600 text-white rounded-full flex items-center justify-center text-2xl shadow-lg ring-4 ring-dairy-100">
+                <i class="fa-solid fa-cow"></i>
+            </div>
+            <div>
+                <h2 id="lockDairyName" class="font-black text-gray-800 text-lg">शुभकामना डेरी</h2>
+                <p class="text-[11px] text-gray-400 font-medium mt-0.5">पासवर्ड लगाउनुहोस् — डाटा सुरक्षित राख्न</p>
+            </div>
+            <form onsubmit="unlockApp(event)" class="space-y-2.5">
+                <div class="relative">
+                    <input type="password" id="lockPassword" placeholder="पासवर्ड" autocomplete="current-password" class="w-full p-3 pr-10 border border-gray-200 rounded-xl text-sm text-center font-bold tracking-widest bg-gray-50 focus:ring-2 focus:ring-dairy-600 outline-none">
+                    <button type="button" onclick="toggleLockEye()" class="absolute right-3 top-3 text-gray-400 hover:text-dairy-600" aria-label="पासवर्ड देखाउनुहोस्">
+                        <i id="lockEyeIcon" class="fa-solid fa-eye text-sm"></i>
+                    </button>
+                </div>
+                <p id="lockError" class="hidden text-[11px] font-semibold text-red-600">गलत पासवर्ड! फेरि प्रयास गर्नुहोस्।</p>
+                <button type="submit" class="w-full bg-dairy-600 hover:bg-dairy-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-md active:scale-[0.98]">
+                    <i class="fa-solid fa-unlock-keyhole mr-1.5"></i>खोल्नुहोस्
+                </button>
+            </form>
+            <p class="text-[9px] text-gray-400 leading-relaxed">पासवर्ड बिर्सिएको छ? ब्याकअप फाइल रहेछ भने ब्राउजर डाटा मेटाएर रिस्टोर गरी पुनः प्रयोग गर्न सकिन्छ।</p>
         </div>
     </div>
 
@@ -593,18 +1000,253 @@
         let payments = JSON.parse(localStorage.getItem('dairy_payments')) || [];
         let currentShiftFilter = 'ALL';
 
-        function getNepaliToday() {
-            return "2083-06-06";
+        // खुद्रा बिक्रीका वस्तुहरू (unit = मात्राको एकाइ)
+        const SALE_ITEMS = {
+            DUDH: { label: 'दूध', unit: 'लिटर', emoji: '🥛' },
+            DAHI: { label: 'दही', unit: 'केजी', emoji: '🥣' },
+            GHEE: { label: 'घी', unit: 'लिटर', emoji: '🫙' },
+            PANEER: { label: 'पनिर', unit: 'केजी', emoji: '🧀' }
+        };
+
+// ============ नेपाली मिति (Bikram Sambat / B.S.) ============
+        // महिनाका दिनहरूको आधिकारिक तालिका (नेपाली पात्रो २००० - २०९०)
+        const BS_MONTH_DAYS = {
+            '2000': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2001': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2002': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2003': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2004': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2005': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2006': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2007': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2008': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 29, 31],
+            '2009': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2010': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2011': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2012': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 30, 30],
+            '2013': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2014': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2015': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2016': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 30, 30],
+            '2017': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2018': [31, 32, 31, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2019': [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2020': [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2021': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2022': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
+            '2023': [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2024': [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2025': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2026': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2027': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2028': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2029': [31, 31, 32, 31, 32, 30, 30, 29, 30, 29, 30, 30],
+            '2030': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2031': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2032': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2033': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2034': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2035': [30, 32, 31, 32, 31, 31, 29, 30, 30, 29, 29, 31],
+            '2036': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2037': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2038': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2039': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 30, 30],
+            '2040': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2041': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2042': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2043': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 30, 30],
+            '2044': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2045': [31, 32, 31, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2046': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2047': [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2048': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2049': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
+            '2050': [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2051': [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2052': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2053': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
+            '2054': [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2055': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2056': [31, 31, 32, 31, 32, 30, 30, 29, 30, 29, 30, 30],
+            '2057': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2058': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2059': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2060': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2061': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2062': [30, 32, 31, 32, 31, 31, 29, 30, 29, 30, 29, 31],
+            '2063': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2064': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2065': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2066': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 29, 31],
+            '2067': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2068': [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2069': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2070': [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 30, 30],
+            '2071': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2072': [31, 32, 31, 32, 31, 30, 30, 29, 30, 29, 30, 30],
+            '2073': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2074': [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2075': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2076': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
+            '2077': [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2078': [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2079': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2080': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
+            '2081': [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2082': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2083': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2084': [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
+            '2085': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+            '2086': [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+            '2087': [31, 31, 32, 31, 31, 31, 30, 30, 29, 30, 30, 30],
+            '2088': [30, 31, 32, 32, 30, 31, 30, 30, 29, 30, 30, 30],
+            '2089': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30],
+            '2090': [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30]
+        };
+
+        // AD (ईस्वी) बाट BS (विक्रम सम्वत्) मा बदल्ने
+        function adToBs(year, monthIndex0, day) {
+            // 2000-01-01 BS = सन् 1943 अप्रिल 14 (दिन 1)
+            const daysPassed = Math.round((Date.UTC(year, monthIndex0, day) - Date.UTC(1943, 3, 14)) / 86400000) + 1;
+            if (daysPassed < 1) return null;
+            let cum = 0;
+            for (let y = 2000; y <= 2090; y++) {
+                const days = BS_MONTH_DAYS[y];
+                const yearTotal = days.reduce((a, b) => a + b, 0);
+                if (daysPassed > cum && daysPassed <= cum + yearTotal) {
+                    let rem = daysPassed - cum;
+                    for (let mi = 0; mi < 12; mi++) {
+                        if (rem <= days[mi]) return { year: y, month: mi + 1, day: rem };
+                        rem -= days[mi];
+                    }
+                }
+                cum += yearTotal;
+            }
+            return null;
         }
 
-        const todayStr = getNepaliToday();
-        const dayName = 'मंगलबार';
+        function getNepaliToday() {
+            const d = new Date();
+            const bs = adToBs(d.getFullYear(), d.getMonth(), d.getDate());
+            if (!bs) return '';
+            return `${bs.year}-${String(bs.month).padStart(2, '0')}-${String(bs.day).padStart(2, '0')}`;
+        }
 
-        document.getElementById('entryDate').value = todayStr;
-        document.getElementById('saleDate').value = todayStr;
-        document.getElementById('expDate').value = todayStr;
-        document.getElementById('currentDateStr').innerText = todayStr;
-        document.getElementById('dashDateHeader').innerText = todayStr + " (" + dayName + ")";
+        const NEPALI_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+        function toNepaliDigits(str) {
+            return String(str).replace(/\d/g, ch => NEPALI_DIGITS[parseInt(ch, 10)]);
+        }
+
+        // नेपाली महिनाहरू (वि.सं. महिना १ = वैशाख ... १२ = चैत)
+        const BS_MONTH_NAMES = ['वैशाख', 'जेठ', 'असार', 'श्रावण', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'];
+
+        const daysNepali = ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'];
+        let todayStr = getNepaliToday();
+
+        function applyTodayDate() {
+            const d = new Date();
+            const dayName = daysNepali[d.getDay()] || 'आइतबार';
+            const dateHeader = document.getElementById('dashDateHeader');
+            if (dateHeader) dateHeader.innerText = toNepaliDigits(todayStr) + " (" + dayName + ")";
+            const entryDate = document.getElementById('entryDate');
+            if (entryDate) entryDate.value = todayStr;
+            const saleDate = document.getElementById('saleDate');
+            if (saleDate) saleDate.value = todayStr;
+            const expDate = document.getElementById('expDate');
+            if (expDate) expDate.value = todayStr;
+        }
+
+        // मिति बदलिएको छ कि छैन जाँच गर्ने र UI अपडेट गर्ने
+        function checkDateChanged() {
+            const newToday = getNepaliToday();
+            if (newToday !== todayStr) {
+                todayStr = newToday;          // नयाँ दिन → ताजा मिति
+                userPickedShift = false;      // नयाँ दिनमा फेरि समयअनुसार बिहान/साँझ आफैँ
+                updateUI();
+            }
+            applyTodayDate();
+            autoSelectShift();                // मिति/समय बदलियो → shift आफैँ मिलाउने
+        }
+
+        // मध्यरातमा मिति आफैँ मिल्ने गरी
+        function scheduleMidnightRefresh() {
+            const now = new Date();
+            const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+            setTimeout(function () {
+                checkDateChanged();
+                scheduleMidnightRefresh();
+            }, msUntilMidnight + 500);
+        }
+        // ===== नेपाली घडी (काठमाडौँ UTC+5:45) र समयअनुसार बिहान/साँझ स्वचालित छनोट =====
+        let userPickedShift = false;    // ग्राहकले आफैँ छानेमा पछि auto ले नरोक्न
+        let applyingAutoShift = false;  // auto छनोटबेला म्यानुअल flag नबदल्न
+
+        function getNepalNow() {
+            const now = new Date();
+            const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+            return new Date(utc + 5.75 * 3600000); // यसको getHours() = नेपाली समय
+        }
+
+        function nepaliPeriod(h) {
+            if (h >= 4 && h < 11) return 'बिहान';
+            if (h >= 11 && h < 16) return 'दिउँसो';
+            if (h >= 16 && h < 19) return 'साँझ';
+            return 'रात';
+        }
+
+        function tickClock() {
+            const np = getNepalNow();
+            const p2 = (n) => String(n).padStart(2, '0');
+            const timeEl = document.getElementById('clockTime');
+            if (timeEl) timeEl.innerText = '⏱ ' + nepaliPeriod(np.getHours()) + ' ' + toNepaliDigits(p2(np.getHours()) + ':' + p2(np.getMinutes()) + ':' + p2(np.getSeconds()));
+            const dateEl = document.getElementById('clockDate');
+            if (dateEl) dateEl.innerText = toNepaliDigits(todayStr); // आजको नेपाली मिति — दिन बदलिएमा आफैँ बदलिन्छ
+            updateDashHero(); // गृहपृष्ठको नमस्कार + नाम पनि समयअनुसार ताजा
+        }
+
+        // गृहपृष्ठ hero: समयअनुसार नमस्कार, सञ्चालक नाम र ब्रान्ड नाम
+        function updateDashHero() {
+            try {
+                const p = nepaliPeriod(getNepalNow().getHours());
+                const greet = (p === 'बिहान') ? 'सुप्रभात 🌅'
+                    : (p === 'दिउँसो') ? 'शुभ दिउँसो ☀️'
+                    : (p === 'साँझ') ? 'शुभ साँझ 🌇'
+                    : 'शुभ रात 🌙';
+                const g = document.getElementById('dashGreeting');
+                if (g) g.innerText = greet;
+                const o = document.getElementById('dashOwnerName');
+                if (o) o.innerText = appSettings.ownerName ? appSettings.ownerName + 'ज्यू' : 'सञ्चालक ज्यू';
+                const bn = document.getElementById('homeBrandName');
+                if (bn) bn.innerText = appSettings.dairyNameNepali;
+                const ln = document.getElementById('lockDairyName');
+                if (ln) ln.innerText = appSettings.dairyNameNepali;
+            } catch (e) { /* element नभए पनि घडी नरोक्न */ }
+        }
+
+        // एप खोल्दाखै/बेरेसमा समय हेरेर बिहान/साँझ छनोट: बिहान ४:००–१४:५९ = बिहान, अन्य = साँझ
+        function autoSelectShift(forceHour) {
+            if (userPickedShift) return;
+            const h = (forceHour !== undefined && forceHour !== null) ? forceHour : getNepalNow().getHours();
+            const shift = (h >= 4 && h < 15) ? 'MORNING' : 'EVENING';
+            if (shift === currentShiftFilter) return; // पहिलेनै सही छ — अनावश्यक रेन्डर नगर्न
+            applyingAutoShift = true;
+            setShiftFilter(shift);
+            applyingAutoShift = false;
+        }
+
+        setInterval(tickClock, 1000); // हरेक सेकेन्ड घडी ताजा
+        setTimeout(checkDateChanged, 60000); // १ मिनेटपछि पहिलो जाँच
+        scheduleMidnightRefresh();
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) checkDateChanged();
+        });
+
+        applyTodayDate();
+
+        // मासिक पूर्ण विवरण: साल/महिना छनोट पूर्व-भर्ने र पहिलो पटक रेन्डर
+        fillMonthlySelectors();
+        renderMonthlyReport();
 
         function saveData() {
             localStorage.setItem('dairy_settings', JSON.stringify(appSettings));
@@ -630,10 +1272,12 @@
                 navBtn.classList.remove('text-gray-400');
                 navBtn.classList.add('text-dairy-600');
             }
+            if (tabId === 'payment') renderMonthlyReport();
             window.scrollTo(0, 0);
         }
 
         function setShiftFilter(shift) {
+            if (!applyingAutoShift) userPickedShift = true; // म्यानुअल क्लिक → पछि auto ले नरोक्ने
             currentShiftFilter = shift;
             if (shift === 'MORNING') {
                 document.getElementById('shiftMorningBtn').className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center space-x-1";
@@ -655,6 +1299,12 @@
             const custOpts = '<option value="">-- ग्राहक छान्नुहोस् --</option>' + customers.map(c => `<option value="${c.id}">${c.name} (${c.customerType === 'SUPPLIER' ? 'बिक्रेता' : 'खरिदकर्ता'})</option>`).join('');
             document.getElementById('entryCustomer').innerHTML = custOpts;
             document.getElementById('ledgerCustomer').innerHTML = custOpts;
+            // होलसेलको खरिदकर्ता dropdown: खरिदकर्ता (BUYER) टाइपका ग्राहक मात्र
+            const buyerOpts = '<option value="">-- खरिदकर्ता छान्नुहोस् --</option>'
+                + customers.filter(c => c.customerType === 'BUYER').map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+                + '<option value="OTHER">✍️ अन्य — नाम लेख्नुहोस्</option>';
+            document.getElementById('saleBuyer').innerHTML = buyerOpts;
+            updateSaleVisibility();
 
             // Collection stats
             const todayEntries = milkEntries.filter(e => e.date === todayStr);
@@ -689,23 +1339,52 @@
             document.getElementById('summaryWholesaleL').innerText = `${wholesaleSales.toFixed(1)} L`;
             document.getElementById('summaryTotalSalesL').innerText = `${totalSalesL.toFixed(1)} L`;
 
+            // आजको बिक्री रेकर्ड (गृहपृष्ठ)
+            const totalSalesAmt = todaySales.reduce((a, c) => a + (c.totalAmount || 0), 0);
+            document.getElementById('homeSalesAmount').innerText = `रु ${totalSalesAmt.toFixed(2)}`;
+            document.getElementById('homeSalesList').innerHTML = todaySales.length
+                ? todaySales.slice().reverse().map(s => saleRowHtml(s, false)).join('')
+                : '<p class="text-gray-400 text-center py-1">आज अहिलेसम्म कुनै बिक्री छैन।</p>';
+
             document.getElementById('customerCountSummary').innerText = `कुल ${customers.length} ग्राहकहरू`;
 
-            // Sales list
-            const salesHtml = milkSales.slice(-5).reverse().map(s => `
-                <div class="flex justify-between items-center p-2.5 bg-gray-50 rounded-lg border">
-                    <div>
-                        <span class="font-bold text-gray-800">${s.buyerName}</span>
-                        <div class="text-gray-500">${s.date} • ${s.type === 'RETAIL' ? '🛍️ खुद्रा' : '📦 होलसेल'} • ${s.liters} L</div>
-                    </div>
-                    <div class="text-right">
-                        <span class="font-bold text-cyan-700">रु ${s.totalAmount.toFixed(2)}</span>
-                    </div>
-                </div>
-            `).join('') || '<p class="text-xs text-gray-400 text-center py-2">कुनै बिक्री रेकर्ड छैन।</p>';
+            // Sales list (हालैका बिक्री रेकर्डहरू)
+            const salesHtml = milkSales.slice(-5).reverse().map(s => saleRowHtml(s, true)).join('')
+                || '<p class="text-xs text-gray-400 text-center py-2">कुनै बिक्री रेकर्ड छैन।</p>';
             document.getElementById('salesListContainer').innerHTML = salesHtml;
 
             renderCustomers();
+        }
+
+        // बिक्री रेकर्डको display info (शीर्षक, विवरण, भुक्तानी ब्याज)
+        function saleRowInfo(s) {
+            const isBuyer = s.mode ? s.mode === 'BUYER' : s.type === 'WHOLESALE';
+            let title, detail;
+            if (isBuyer) {
+                title = `🏪 ${s.buyerName || 'खरिदकर्ता'}`;
+                detail = `${s.liters || 0} L${s.fat ? ' • ' + s.fat + '% Fat' : ''}`;
+            } else {
+                const emoji = (s.item && typeof SALE_ITEMS !== 'undefined' && SALE_ITEMS[s.item]) ? SALE_ITEMS[s.item].emoji : '🛍️';
+                title = `${emoji} ${s.itemName || s.buyerName || 'सामान'}`;
+                const qty = (s.qty != null) ? s.qty : (s.liters || 0);
+                detail = `${qty} ${s.itemUnit || 'L'}`;
+            }
+            const payBadge = s.paymentMethod === 'CASH' ? '💵 क्यास'
+                : s.paymentMethod === 'CREDIT' ? '📝 क्रेडिट'
+                : s.paymentMethod === 'BANK' ? '🏦 बैंक' : '';
+            return { isBuyer, title, detail, payBadge };
+        }
+
+        function saleRowHtml(s, showDate) {
+            const info = saleRowInfo(s);
+            return `
+                <div class="flex justify-between items-center bg-white rounded-lg border border-emerald-100 px-2 py-1.5 gap-2">
+                    <div class="min-w-0">
+                        <p class="font-bold text-gray-800 truncate">${info.title}</p>
+                        <p class="text-gray-500 text-[10px]">${showDate ? s.date + ' • ' : ''}${info.detail}${info.payBadge ? ' • ' + info.payBadge : ''}</p>
+                    </div>
+                    <span class="font-bold text-cyan-700 whitespace-nowrap">रु ${(s.totalAmount || 0).toFixed(2)}</span>
+                </div>`;
         }
 
         function calculateAmount() {
@@ -749,29 +1428,499 @@
             switchTab('home');
         }
 
+        // बिक्री मोड फेर्ने: खरिदकर्ता (Buyer) | खुद्रा (Retail)
+        function setSaleMode(mode) {
+            document.getElementById('saleMode').value = mode;
+            const isWholesale = mode === 'BUYER';
+            const activeCls = "py-2.5 rounded-lg text-[11px] font-bold transition bg-cyan-700 text-white shadow";
+            const idleCls = "py-2.5 rounded-lg text-[11px] font-bold transition bg-gray-100 text-gray-500 hover:bg-gray-200";
+            document.getElementById('saleModeBuyerBtn').className = isWholesale ? activeCls : idleCls;
+            document.getElementById('saleModeRetailBtn').className = isWholesale ? idleCls : activeCls;
+            updateSaleVisibility();
+            updateSaleUnit();
+            calculateSaleAmount();
+        }
+
+        // मोड र खरिदकर्ता अनुसार कुन फिल्ड देखाउने भन्ने नियन्त्रण
+        // - होलसेल: पहिले खरिदकर्ता नाम मात्र, नाम छानेपछि मात्र बाँकी विवरण
+        // - खुद्रा: सबै फिल्ड तुरुन्तै देखिने
+        function updateSaleVisibility() {
+            const isWholesale = document.getElementById('saleMode').value === 'BUYER';
+            const buyerSel = document.getElementById('saleBuyer').value;
+            const buyerChosen = !!buyerSel;
+
+            const buyerGroup = document.getElementById('saleBuyerGroup');
+            const wholesaleDetails = document.getElementById('saleWholesaleDetails');
+            const retailGroup = document.getElementById('saleRetailGroup');
+            const amountBlock = document.getElementById('saleAmountBlock');
+            const otherWrap = document.getElementById('saleBuyerOtherWrap');
+
+            if (isWholesale) {
+                buyerGroup.classList.remove('hidden');
+                retailGroup.classList.add('hidden');
+                if (buyerChosen) {
+                    wholesaleDetails.classList.remove('hidden');
+                    amountBlock.classList.remove('hidden');
+                } else {
+                    wholesaleDetails.classList.add('hidden');
+                    amountBlock.classList.add('hidden');
+                }
+                if (buyerSel === 'OTHER') otherWrap.classList.remove('hidden');
+                else otherWrap.classList.add('hidden');
+            } else {
+                retailGroup.classList.remove('hidden');
+                buyerGroup.classList.add('hidden');
+                wholesaleDetails.classList.add('hidden');
+                otherWrap.classList.add('hidden');
+                amountBlock.classList.remove('hidden');
+            }
+            updateSaleRateFromBuyer();
+        }
+
+        // खुद्राको वस्तु अनुसार मात्राको एकाइ (लिटर / केजी) देखाउने
+        function updateSaleUnit() {
+            const item = SALE_ITEMS[document.getElementById('saleItem').value];
+            document.getElementById('saleUnit').innerText = item ? item.unit : 'लिटर';
+        }
+
         function calculateSaleAmount() {
-            const liters = parseFloat(document.getElementById('saleLiters').value) || 0;
+            const mode = document.getElementById('saleMode').value;
+            const qty = mode === 'BUYER'
+                ? (parseFloat(document.getElementById('saleLiters').value) || 0)
+                : (parseFloat(document.getElementById('saleQty').value) || 0);
             const rate = parseFloat(document.getElementById('saleRate').value) || 0;
-            document.getElementById('saleTotal').value = (liters * rate).toFixed(2);
+            document.getElementById('saleTotal').value = (qty * rate).toFixed(2);
+        }
+
+        // खरिदकर्ताको पुर्व निर्धारित दर per fat × फ्याट = दूधको दर आफैँ राख्ने
+        // (दूध खरिद entry जस्तै — खरिदकर्ता छान्दा वा फ्याट लेख्दा दर आफैँ भरिन्छ)
+        function updateSaleRateFromBuyer() {
+            const hint = document.getElementById('saleRateHint');
+            hint.innerText = '';
+            if (document.getElementById('saleMode').value !== 'BUYER') return;
+            const sel = document.getElementById('saleBuyer').value;
+            if (!sel || sel === 'OTHER') return;
+            const cust = customers.find(c => String(c.id) === String(sel));
+            if (!cust || !cust.defaultRate) return;
+            const fat = parseFloat(document.getElementById('saleFat').value) || 0;
+            if (fat <= 0) return;
+            document.getElementById('saleRate').value = (cust.defaultRate * fat).toFixed(2);
+            hint.innerText = `पुर्व निर्धारित दर रु ${cust.defaultRate} × फ्याट ${fat} बाट आफैँ`;
+            calculateSaleAmount();
         }
 
         function saveMilkSale(e) {
             e.preventDefault();
-            const sale = {
-                id: Date.now(),
-                date: document.getElementById('saleDate').value,
-                type: document.getElementById('saleType').value,
-                buyerName: document.getElementById('saleBuyerName').value,
-                liters: parseFloat(document.getElementById('saleLiters').value),
-                rate: parseFloat(document.getElementById('saleRate').value),
-                totalAmount: parseFloat(document.getElementById('saleTotal').value)
-            };
+            const mode = document.getElementById('saleMode').value;
+            const date = document.getElementById('saleDate').value.trim();
+            const rate = parseFloat(document.getElementById('saleRate').value) || 0;
+            const paymentMethod = document.getElementById('salePayment').value;
+
+            if (!date) { alert('मिति भर्नुहोस्!'); return; }
+            if (rate <= 0) { alert('दर (Rate) भर्नुहोस्!'); return; }
+
+            let sale = null;
+            if (mode === 'BUYER') {
+                const sel = document.getElementById('saleBuyer').value;
+                if (!sel) { alert('खरिदकर्ता छान्नुहोस्!'); return; }
+                let buyerName = '', customerId = null;
+                if (sel === 'OTHER') {
+                    buyerName = document.getElementById('saleBuyerOther').value.trim();
+                    if (!buyerName) { alert('खरिदकर्ताको नाम लेख्नुहोस्!'); return; }
+                } else {
+                    customerId = parseInt(sel);
+                    const cust = customers.find(c => c.id === customerId);
+                    if (!cust) { alert('ग्राहक भेटिएन!'); return; }
+                    buyerName = cust.name;
+                }
+                const liters = parseFloat(document.getElementById('saleLiters').value) || 0;
+                if (liters <= 0) { alert('दूधको लिटर भर्नुहोस्!'); return; }
+                const fat = parseFloat(document.getElementById('saleFat').value) || 0;
+                sale = {
+                    id: Date.now(), date, mode: 'BUYER', type: 'WHOLESALE',
+                    customerId, buyerName, liters, fat,
+                    rate, totalAmount: liters * rate, paymentMethod
+                };
+            } else {
+                const itemKey = document.getElementById('saleItem').value;
+                const item = SALE_ITEMS[itemKey];
+                const qty = parseFloat(document.getElementById('saleQty').value) || 0;
+                if (qty <= 0) { alert('मात्रा (Quantity) भर्नुहोस्!'); return; }
+                const retailName = document.getElementById('saleRetailName').value.trim();
+                sale = {
+                    id: Date.now(), date, mode: 'RETAIL', type: 'RETAIL',
+                    item: itemKey, itemName: item.label, itemUnit: item.unit,
+                    buyerName: retailName, qty,
+                    liters: itemKey === 'DUDH' ? qty : 0,
+                    rate, totalAmount: qty * rate, paymentMethod
+                };
+            }
+
             milkSales.push(sale);
             saveData();
             document.getElementById('milkSaleForm').reset();
             document.getElementById('saleDate').value = todayStr;
-            alert('दूध बिक्री सफलतापूर्वक सेभ भयो!');
+            setSaleMode('BUYER');
+            alert('बिक्री सफलतापूर्वक सेभ भयो!');
             switchTab('home');
+        }
+
+        // ===== मिति अनुसार होलसेल / खुद्रा बिक्री रिपोर्ट प्रिन्ट =====
+        const SALE_PAY_LABEL = { CASH: 'क्यास', CREDIT: 'क्रेडिट', BANK: 'बैंक ट्रान्सफर' };
+
+        function getSalesForReport(kind, date) {
+            const isWholesale = kind === 'WHOLESALE';
+            return milkSales.filter(s => {
+                if (s.date !== date) return false;
+                const saleIsWholesale = s.mode ? s.mode === 'BUYER' : s.type === 'WHOLESALE';
+                return saleIsWholesale === isWholesale;
+            });
+        }
+
+        function buildSalesReportHtml(kind, date) {
+            const isWholesale = kind === 'WHOLESALE';
+            const rows = getSalesForReport(kind, date);
+            const reportTitle = isWholesale ? 'होलसेल बिक्री रिपोर्ट (Wholesale)' : 'खुद्रा बिक्री रिपोर्ट (Retail)';
+            const totalAmt = rows.reduce((a, s) => a + (s.totalAmount || 0), 0);
+            const totalLiters = rows.reduce((a, s) => a + (s.liters || 0), 0);
+            const payLabel = (s) => s.paymentMethod ? (SALE_PAY_LABEL[s.paymentMethod] || s.paymentMethod) : '—';
+
+            const tableHtml = isWholesale ? `
+                    <table>
+                        <thead>
+                            <tr><th>क्र.सं.</th><th>मिति</th><th>खरिदकर्ता</th><th>लिटर</th><th>फ्याट %</th><th>दर (रु)</th><th>रकम (रु)</th><th>भुक्तानी</th></tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map((s, i) => `
+                                <tr>
+                                    <td style="text-align: center;">${i + 1}</td>
+                                    <td style="text-align: center;">${s.date || date}</td>
+                                    <td>${s.buyerName || '-'}</td>
+                                    <td style="text-align: right;">${(s.liters || 0).toFixed(1)}</td>
+                                    <td style="text-align: right;">${s.fat || '-'}</td>
+                                    <td style="text-align: right;">${(s.rate || 0).toFixed(2)}</td>
+                                    <td style="text-align: right; font-weight: bold;">${(s.totalAmount || 0).toFixed(2)}</td>
+                                    <td style="text-align: center;">${payLabel(s)}</td>
+                                </tr>
+                            `).join('')}
+                            <tr class="row-total">
+                                <td colspan="3" style="text-align: center;">जम्मा</td>
+                                <td style="text-align: right;">${totalLiters.toFixed(1)}</td>
+                                <td></td>
+                                <td></td>
+                                <td style="text-align: right;">${totalAmt.toFixed(2)}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>` : `
+                    <table>
+                        <thead>
+                            <tr><th>क्र.सं.</th><th>मिति</th><th>नाम</th><th>वस्तु</th><th>मात्रा</th><th>दर (रु)</th><th>रकम (रु)</th><th>भुक्तानी</th></tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map((s, i) => `
+                                <tr>
+                                    <td style="text-align: center;">${i + 1}</td>
+                                    <td style="text-align: center;">${s.date || date}</td>
+                                    <td>${(s.buyerName && s.buyerName !== s.itemName) ? s.buyerName : '-'}</td>
+                                    <td>${s.itemName || s.buyerName || '-'}</td>
+                                    <td style="text-align: right;">${(s.qty != null ? s.qty : (s.liters || 0))} ${s.itemUnit || 'L'}</td>
+                                    <td style="text-align: right;">${(s.rate || 0).toFixed(2)}</td>
+                                    <td style="text-align: right; font-weight: bold;">${(s.totalAmount || 0).toFixed(2)}</td>
+                                    <td style="text-align: center;">${payLabel(s)}</td>
+                                </tr>
+                            `).join('')}
+                            <tr class="row-total">
+                                <td colspan="5" style="text-align: center;">जम्मा (${rows.length} रेकर्ड)</td>
+                                <td></td>
+                                <td style="text-align: right;">${totalAmt.toFixed(2)}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>`;
+
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>${reportTitle} - ${date}</title>
+                    <style>
+                        @page { size: A4; margin: 15mm; }
+                        body { font-family: sans-serif; margin: 0; color: #222; padding: 16px; }
+                        .header { text-align: center; border-bottom: 2px solid #00838f; padding-bottom: 8px; margin-bottom: 12px; }
+                        .title { font-size: 22px; font-weight: bold; color: #00838f; }
+                        .subtitle { font-size: 14px; color: #555; }
+                        .date-badge { display: inline-block; margin-top: 8px; background: #e6f7f9; border: 1px solid #b3e5e8; border-radius: 4px; padding: 4px 12px; color: #00838f; font-weight: 600; font-size: 13px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+                        th, td { border: 1px solid #ccc; padding: 7px; }
+                        th { background-color: #eefafb; color: #00838f; text-align: center; }
+                        .row-total td { background-color: #eefafb; font-weight: bold; }
+                        .summary-box { margin-top: 16px; padding: 12px; background: #f7fdfd; border: 1px solid #cdecef; border-radius: 6px; font-size: 13px; }
+                        .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; color: #555; border-top: 1px dashed #bbb; padding-top: 10px; }
+                        .no-print { margin-top: 18px; text-align: center; }
+                        .no-print button { background: #00838f; color: #fff; border: 0; padding: 10px 26px; font-size: 14px; border-radius: 6px; cursor: pointer; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">${appSettings.dairyNameNepali}</div>
+                        <div style="font-size: 16px; color: #2e6b4f; font-weight: 600;">${appSettings.dairyNameEnglish}</div>
+                        <div class="subtitle">ठेगाना: ${appSettings.address} | फोन: ${appSettings.phone}</div>
+                        <div style="font-size: 13px; margin-top: 6px; color: #666;">${reportTitle}</div>
+                        <div class="date-badge">मिति: ${date}</div>
+                    </div>
+                    ${tableHtml}
+                    <div class="summary-box">
+                        <div>कुल रेकर्ड: <strong>${rows.length}</strong></div>
+                        ${isWholesale ? `<div>कुल दूध परिमाण: <strong>${totalLiters.toFixed(1)} लिटर</strong></div>` : ''}
+                        <div>कुल बिक्री रकम: <strong>रु ${totalAmt.toFixed(2)}</strong></div>
+                    </div>
+                    <div class="footer">
+                        <div>तयार गर्ने: ${appSettings.ownerName} (सञ्चालक)</div>
+                        <div>हस्ताक्षर: _________________</div>
+                    </div>
+                    <div class="no-print"><button onclick="window.print()">🖨️ प्रिन्ट गर्नुहोस्</button></div>
+                </body>
+                </html>
+            `;
+        }
+
+        function printSalesReport(kind) {
+            const date = document.getElementById('saleDate').value.trim();
+            if (!date) { alert('मिति भर्नुहोस्!'); return; }
+            const rows = getSalesForReport(kind, date);
+            if (rows.length === 0) {
+                alert(`${date} मा कुनै ${kind === 'WHOLESALE' ? 'होलसेल' : 'खुद्रा'} बिक्री रेकर्ड छैन!`);
+                return;
+            }
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(buildSalesReportHtml(kind, date));
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => { printWindow.print(); }, 500);
+        }
+
+        // ===== मासिक पूर्ण विवरण (साल + महिना → खर्च/आम्दानी रिपोर्ट, नेपाली क्यालेन्डर) =====
+        function fillMonthlySelectors() {
+            const yearSel = document.getElementById('repYear');
+            const monthSel = document.getElementById('repMonth');
+            if (!yearSel || !monthSel) return;
+
+            const curYear = parseInt(todayStr.slice(0, 4), 10) || 2083;
+            const years = new Set();
+            for (let y = curYear; y >= curYear - 4; y--) years.add(y);
+            [milkEntries, milkSales, payments, expenses].forEach(arr => {
+                (arr || []).forEach(r => {
+                    const y = parseInt(String(r && r.date ? r.date : '').slice(0, 4), 10);
+                    if (y) years.add(y);
+                });
+            });
+            const prevYear = yearSel.value;
+            const sorted = [...years].sort((a, b) => b - a);
+            yearSel.innerHTML = sorted.map(y => `<option value="${y}">${toNepaliDigits(String(y))} वि.सं.</option>`).join('');
+            yearSel.value = (prevYear && sorted.indexOf(parseInt(prevYear, 10)) >= 0) ? prevYear : String(curYear);
+
+            const prevMonth = monthSel.value;
+            monthSel.innerHTML = BS_MONTH_NAMES.map((m, i) => `<option value="${String(i + 1).padStart(2, '0')}">${m}</option>`).join('');
+            monthSel.value = (prevMonth && /^\d{2}$/.test(prevMonth)) ? prevMonth : todayStr.slice(5, 7);
+        }
+
+        function getMonthlyReportData(prefix) {
+            const inMonth = (r) => !!r && typeof r.date === 'string' && r.date.indexOf(prefix) === 0;
+            const entries = milkEntries.filter(inMonth);
+            const exps = expenses.filter(inMonth);
+            const pays = payments.filter(p => {
+                if (!inMonth(p)) return false;
+                const c = customers.find(x => x.id === p.customerId);
+                return !c || c.customerType !== 'BUYER'; // दूध किनेको कृषकलाई दिएको भुक्तानी मात्र
+            });
+            const sales = milkSales.filter(inMonth);
+            const wholesale = sales.filter(s => (s.mode ? s.mode === 'BUYER' : s.type === 'WHOLESALE'));
+            const retail = sales.filter(s => (s.mode ? s.mode === 'RETAIL' : s.type === 'RETAIL'));
+
+            const milkLiters = entries.reduce((a, e) => a + (e.liters || 0), 0);
+            const milkAmount = entries.reduce((a, e) => a + (e.totalAmount || 0), 0);
+            const paidAmount = pays.reduce((a, p) => a + (p.amount || 0), 0);
+            const otherExp = exps.reduce((a, x) => a + (x.amount || 0), 0);
+            const wholesaleAmt = wholesale.reduce((a, s) => a + (s.totalAmount || 0), 0);
+            const retailAmt = retail.reduce((a, s) => a + (s.totalAmount || 0), 0);
+            const totalExpense = milkAmount + otherExp; // दूध रकम + अन्य खर्च
+            const totalIncome = wholesaleAmt + retailAmt;
+            return {
+                prefix, entries, exps, pays, wholesale, retail,
+                milkLiters, milkAmount, paidAmount, otherExp,
+                wholesaleAmt, retailAmt, totalExpense, totalIncome,
+                netProfit: totalIncome - totalExpense,
+                cashOut: paidAmount + otherExp
+            };
+        }
+
+        function renderMonthlyReport() {
+            const box = document.getElementById('monthlyReportBox');
+            if (!box) return;
+            const yearSel = document.getElementById('repYear');
+            const monthSel = document.getElementById('repMonth');
+            if (!yearSel.value || !monthSel.value) fillMonthlySelectors();
+            if (!yearSel.value || !monthSel.value || yearSel.value.length !== 4 || monthSel.value.length !== 2) {
+                box.innerHTML = '<p class="text-xs text-gray-400 text-center py-3">साल र महिना छान्नुहोस्।</p>';
+                return;
+            }
+            const prefix = `${yearSel.value}-${monthSel.value}`;
+            const d = getMonthlyReportData(prefix);
+            const monthName = BS_MONTH_NAMES[parseInt(monthSel.value, 10) - 1] || monthSel.value;
+            const days = (BS_MONTH_DAYS[yearSel.value] || [])[parseInt(monthSel.value, 10) - 1];
+            const lastDay = days ? String(days).padStart(2, '0') : '30';
+            const rangeText = `${prefix}-01 देखि ${prefix}-${lastDay} सम्म`;
+
+            const row = (label, sub, amt, cls) => `
+                <div class="flex justify-between items-center gap-1.5 bg-white border border-gray-100 rounded px-2 py-1.5">
+                    <div class="min-w-0">
+                        <p class="font-semibold text-gray-700 text-[10px] truncate">${label}</p>
+                        <p class="text-[9px] text-gray-400">${sub}</p>
+                    </div>
+                    <span class="font-bold text-[10px] whitespace-nowrap ${cls || 'text-gray-800'}">रु ${amt}</span>
+                </div>`;
+
+            box.innerHTML = `
+                <div class="flex justify-between items-center bg-dairy-50 border border-dairy-100 rounded-lg px-2.5 py-1.5 text-[10px] gap-1">
+                    <span class="font-bold text-dairy-700">📅 महिना: ${monthName} ${toNepaliDigits(yearSel.value)}</span>
+                    <span class="text-gray-500">${toNepaliDigits(rangeText)}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <div class="space-y-1.5 bg-red-50 border border-red-100 rounded-lg p-1.5">
+                        <p class="text-[10px] font-black text-red-600">📤 खर्च तिर</p>
+                        ${row('दूध किनेको', d.milkLiters.toFixed(1) + ' लिटर', d.milkAmount.toFixed(2), 'text-red-700')}
+                        ${row('कृषकलाई तिरेको', d.pays.length + ' वटा भुक्तानी', d.paidAmount.toFixed(2), 'text-red-700')}
+                        ${row('अन्य खर्च', d.exps.length + ' वटा', d.otherExp.toFixed(2), 'text-red-700')}
+                        ${row('जम्मा खर्च', 'दूध रकम + अन्य खर्च', d.totalExpense.toFixed(2), 'text-red-600 font-black')}
+                        ${row('कुल नगद बाहिरिएको', 'तिरेको + खर्च', d.cashOut.toFixed(2), 'text-gray-600')}
+                    </div>
+                    <div class="space-y-1.5 bg-emerald-50 border border-emerald-100 rounded-lg p-1.5">
+                        <p class="text-[10px] font-black text-emerald-700">📥 आम्दानी तिर</p>
+                        ${row('होलसेल बिक्री', d.wholesale.length + ' रेकर्ड', d.wholesaleAmt.toFixed(2), 'text-emerald-700')}
+                        ${row('खुद्रा बिक्री', d.retail.length + ' रेकर्ड', d.retailAmt.toFixed(2), 'text-emerald-700')}
+                        ${row('जम्मा आम्दानी', 'होलसेल + खुद्रा', d.totalIncome.toFixed(2), 'text-emerald-700 font-black')}
+                        <div class="flex justify-between items-center bg-white border border-emerald-200 rounded px-2 py-1.5">
+                            <p class="text-[10px] font-black text-gray-700">नाफा / नोक्सानी</p>
+                            <span class="text-[10px] font-black ${d.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}">रु ${d.netProfit.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function buildMonthlyReportHtml(prefix) {
+            const d = getMonthlyReportData(prefix);
+            const year = prefix.slice(0, 4);
+            const month = prefix.slice(5, 7);
+            const monthName = BS_MONTH_NAMES[parseInt(month, 10) - 1] || month;
+            const days = (BS_MONTH_DAYS[year] || [])[parseInt(month, 10) - 1];
+            const lastDay = days ? String(days).padStart(2, '0') : '30';
+            const rangeText = `${year}-${month}-01 देखि ${year}-${month}-${lastDay} सम्म`;
+            const todayMonth = BS_MONTH_NAMES[parseInt(todayStr.slice(5, 7), 10) - 1] || '';
+            const printDateText = `${todayMonth} ${toNepaliDigits(todayStr.slice(8, 10))}, ${toNepaliDigits(todayStr.slice(0, 4))}`;
+            const reportTitle = 'मासिक पूर्ण विवरण (Monthly Full Report)';
+            const f = (x) => x.toFixed(2);
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>${reportTitle} - ${monthName} ${year}</title>
+                    <style>
+                        @page { size: A4; margin: 15mm; }
+                        body { font-family: sans-serif; margin: 0; color: #222; padding: 16px; }
+                        .header { text-align: center; border-bottom: 2px solid #00838f; padding-bottom: 8px; margin-bottom: 12px; }
+                        .title { font-size: 22px; font-weight: bold; color: #00838f; }
+                        .subtitle { font-size: 14px; color: #555; }
+                        .date-badge { display: inline-block; margin-top: 8px; background: #e6f7f9; border: 1px solid #b3e5e8; border-radius: 4px; padding: 4px 12px; color: #00838f; font-weight: 600; font-size: 13px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+                        th, td { border: 1px solid #ccc; padding: 7px; }
+                        th { background-color: #eefafb; color: #00838f; text-align: center; }
+                        .row-total td { background-color: #eefafb; font-weight: bold; }
+                        .summary-box { margin-top: 16px; padding: 12px; background: #f7fdfd; border: 1px solid #cdecef; border-radius: 6px; font-size: 13px; }
+                        .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; color: #555; border-top: 1px dashed #bbb; padding-top: 10px; }
+                        .no-print { margin-top: 18px; text-align: center; }
+                        .no-print button { background: #00838f; color: #fff; border: 0; padding: 10px 26px; font-size: 14px; border-radius: 6px; cursor: pointer; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">${appSettings.dairyNameNepali}</div>
+                        <div style="font-size: 16px; color: #2e6b4f; font-weight: 600;">${appSettings.dairyNameEnglish}</div>
+                        <div class="subtitle">ठेगाना: ${appSettings.address} | फोन: ${appSettings.phone}</div>
+                        <div style="font-size: 13px; margin-top: 6px; color: #666;">${reportTitle}</div>
+                        <div class="date-badge">महिना: ${monthName} ${toNepaliDigits(year)} • ${toNepaliDigits(rangeText)}</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>📤 खर्च तिर</th><th>रकम (रु)</th><th>📥 आम्दानी तिर</th><th>रकम (रु)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>दूध किनेको (${d.milkLiters.toFixed(1)} लिटर)</td>
+                                <td style="text-align: right;">${f(d.milkAmount)}</td>
+                                <td>होलसेल बिक्री (${d.wholesale.length} रेकर्ड)</td>
+                                <td style="text-align: right;">${f(d.wholesaleAmt)}</td>
+                            </tr>
+                            <tr>
+                                <td>कृषकलाई तिरेको (${d.pays.length} वटा)</td>
+                                <td style="text-align: right;">${f(d.paidAmount)}</td>
+                                <td>खुद्रा बिक्री (${d.retail.length} रेकर्ड)</td>
+                                <td style="text-align: right;">${f(d.retailAmt)}</td>
+                            </tr>
+                            <tr>
+                                <td>अन्य खर्च (${d.exps.length} वटा)</td>
+                                <td style="text-align: right;">${f(d.otherExp)}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="row-total">
+                                <td>जम्मा खर्च (दूध रकम + अन्य खर्च)</td>
+                                <td style="text-align: right;">${f(d.totalExpense)}</td>
+                                <td>जम्मा आम्दानी (होलसेल + खुद्रा)</td>
+                                <td style="text-align: right;">${f(d.totalIncome)}</td>
+                            </tr>
+                            <tr>
+                                <td>कुल नगद बाहिरिएको (तिरेको + खर्च)</td>
+                                <td style="text-align: right;">${f(d.cashOut)}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="row-total">
+                                <td colspan="2">शुद्ध नाफा / नोक्सानी</td>
+                                <td colspan="2" style="text-align: right;">रु ${f(d.netProfit)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="summary-box">
+                        <div>महिना: <strong>${monthName} ${toNepaliDigits(year)}</strong> (${toNepaliDigits(rangeText)})</div>
+                        <div>कुल दूध खरिद: <strong>${d.milkLiters.toFixed(1)} लिटर</strong></div>
+                        <div>प्रिन्ट मिति (नेपाली क्यालेन्डर): <strong>${printDateText}</strong></div>
+                    </div>
+                    <div class="footer">
+                        <div>तयार गर्ने: ${appSettings.ownerName} (सञ्चालक)</div>
+                        <div>हस्ताक्षर: _________________</div>
+                    </div>
+                    <div class="no-print"><button onclick="window.print()">🖨️ प्रिन्ट गर्नुहोस्</button></div>
+                </body>
+                </html>
+            `;
+        }
+
+        function printMonthlyReport() {
+            const yearSel = document.getElementById('repYear');
+            const monthSel = document.getElementById('repMonth');
+            if (!yearSel.value || !monthSel.value) fillMonthlySelectors();
+            const year = yearSel.value, month = monthSel.value;
+            if (!year || !month) { alert('साल र महिना छान्नुहोस्!'); return; }
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(buildMonthlyReportHtml(`${year}-${month}`));
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => { printWindow.print(); }, 500);
         }
 
         function renderCustomers() {
@@ -802,6 +1951,7 @@
             document.getElementById('modalCustPhone').value = '';
             document.getElementById('modalCustAddress').value = 'लिखु-६, नुवाकोट';
             document.getElementById('modalCustRate').value = '9.5';
+            document.getElementById('modalCustType').value = 'SUPPLIER';
             document.getElementById('customerModalTitle').innerText = 'नयाँ ग्राहक थप्नुहोस्';
 
             if (id) {
@@ -852,7 +2002,26 @@
             }
         }
 
-        function loadCustomerLedger() {
+        // मिति सीमा (From/To) लाई सही फर्म्याट (YYYY-MM-DD) मा बनाउने
+        function normBsDate(s) {
+            const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
+            if (!m) return '';
+            return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+        }
+
+        function getLedgerRange() {
+            const from = normBsDate((document.getElementById('ledgerFrom').value || '').trim());
+            const to = normBsDate((document.getElementById('ledgerTo').value || '').trim());
+            return { from, to };
+        }
+
+        function clearLedgerDateRange() {
+            document.getElementById('ledgerFrom').value = '';
+            document.getElementById('ledgerTo').value = '';
+            loadCustomerLedger();
+        }
+
+        function loadCustomerLedger(resetDateFilter) {
             const custId = parseInt(document.getElementById('ledgerCustomer').value);
             const detailsDiv = document.getElementById('ledgerDetails');
             if (!custId) {
@@ -863,6 +2032,34 @@
             const customer = customers.find(c => c.id === custId);
             const custEntries = milkEntries.filter(e => e.customerId === custId);
             const custPayments = payments.filter(p => p.customerId === custId);
+
+            // मिति अनुसार फिल्टर (त्यसै ग्राहकका भएका मितिहरू मात्र)
+            const dateSelect = document.getElementById('ledgerDateFilter');
+            const prevDate = dateSelect.value;
+            const entryDates = [...new Set(custEntries.map(e => e.date))].sort().reverse();
+            dateSelect.innerHTML = '<option value="">सबै मिति</option>' + entryDates.map(d => `<option value="${d}">${d}</option>`).join('');
+            dateSelect.value = (resetDateFilter || !entryDates.includes(prevDate)) ? '' : prevDate;
+            const filterDate = dateSelect.value;
+            const range = getLedgerRange();
+            const inRange = (d) => (!range.from || d >= range.from) && (!range.to || d <= range.to);
+            let shownEntries = custEntries.filter(e => inRange(e.date));
+            if (filterDate) shownEntries = shownEntries.filter(e => e.date === filterDate);
+
+            // मिति अनुसार क्रमबद्ध: पहिले पुरानो मिति, त्यसै दिनमा पहिले बिहान
+            shownEntries.sort((a, b) => {
+                if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+                if (a.shift !== b.shift) return a.shift === 'MORNING' ? -1 : 1;
+                return 0;
+            });
+
+            // सक्रिय सीमा चिप देखाउने / लुकाउने
+            const chip = document.getElementById('ledgerRangeChip');
+            if (range.from || range.to) {
+                chip.innerText = `सीमा: ${range.from || '…'} → ${range.to || '…'}`;
+                chip.classList.remove('hidden');
+            } else {
+                chip.classList.add('hidden');
+            }
 
             const totalL = custEntries.reduce((acc, curr) => acc + curr.liters, 0);
             const totalAmt = custEntries.reduce((acc, curr) => acc + curr.totalAmount, 0);
@@ -884,23 +2081,93 @@
                             <th class="p-2 text-right">लिटर</th>
                             <th class="p-2 text-right">Fat</th>
                             <th class="p-2 text-right">जम्मा (रु)</th>
+                            <th class="p-2 text-center">कार्य</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${custEntries.map(e => `
+                        ${shownEntries.map(e => `
                             <tr class="border-b">
                                 <td class="p-2">${e.date}</td>
                                 <td class="p-2">${e.shift === 'MORNING' ? 'बिहान' : 'साँझ'}</td>
                                 <td class="p-2 text-right">${e.liters} L</td>
                                 <td class="p-2 text-right">${e.fat}%</td>
                                 <td class="p-2 text-right font-bold text-dairy-600">${e.totalAmount.toFixed(2)}</td>
+                                <td class="p-2 text-center">
+                                    <button onclick="openEntryEditModal(${e.id})" title="सम्पादन गर्नुहोस्" class="text-dairy-600 hover:bg-dairy-100 rounded p-1 transition">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </td>
                             </tr>
-                        `).join('') || '<tr><td colspan="5" class="p-4 text-center text-gray-400">कुनै इन्ट्रि छैन।</td></tr>'}
+                        `).join('') || `<tr><td colspan="6" class="p-4 text-center text-gray-400">${filterDate ? 'त्यो मितिमा कुनै इन्ट्रि छैन।' : 'कुनै इन्ट्रि छैन।'}</td></tr>`}
                     </tbody>
                 </table>
             `;
             document.getElementById('ledgerEntriesTable').innerHTML = tableHtml;
             detailsDiv.classList.remove('hidden');
+        }
+
+        // ===== गलत डाटा सम्पादन (Entry Edit) =====
+        function openEntryEditModal(id) {
+            const entry = milkEntries.find(x => x.id === id);
+            if (!entry) return;
+
+            document.getElementById('editEntryCustomer').innerHTML = customers.map(c => `<option value="${c.id}">${c.name} (${c.customerType === 'SUPPLIER' ? 'बिक्रेता' : 'खरिदकर्ता'})</option>`).join('');
+            document.getElementById('editEntryId').value = entry.id;
+            document.getElementById('editEntryCustomer').value = String(entry.customerId);
+            document.getElementById('editEntryDate').value = entry.date;
+            document.getElementById('editEntryShift').value = entry.shift;
+            document.getElementById('editEntryLiters').value = entry.liters;
+            document.getElementById('editEntryFat').value = entry.fat;
+            document.getElementById('editEntrySnf').value = entry.snf;
+            document.getElementById('editEntryRate').value = entry.ratePerLiter;
+            document.getElementById('editEntryTotal').value = entry.totalAmount;
+            document.getElementById('entryEditModal').classList.remove('hidden');
+        }
+
+        function closeEntryEditModal() {
+            document.getElementById('entryEditModal').classList.add('hidden');
+        }
+
+        function recalcEditTotal() {
+            const liters = parseFloat(document.getElementById('editEntryLiters').value) || 0;
+            const rate = parseFloat(document.getElementById('editEntryRate').value) || 0;
+            document.getElementById('editEntryTotal').value = (liters * rate).toFixed(2);
+        }
+
+        function calculateEditAmount() {
+            const custId = parseInt(document.getElementById('editEntryCustomer').value);
+            const customer = customers.find(c => c.id === custId);
+            const fat = parseFloat(document.getElementById('editEntryFat').value) || 0;
+            const ratePerFat = customer ? (customer.defaultRate || 0) : 9.5;
+            const ratePerLiter = fat * ratePerFat;
+            document.getElementById('editEntryRate').value = ratePerLiter.toFixed(2);
+            recalcEditTotal();
+        }
+
+        function saveEntryEdit(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editEntryId').value);
+            const entry = milkEntries.find(x => x.id === id);
+            if (!entry) return;
+
+            const custId = parseInt(document.getElementById('editEntryCustomer').value);
+            const customer = customers.find(c => c.id === custId);
+            if (!customer) return;
+
+            entry.customerId = custId;
+            entry.customerName = customer.name;
+            entry.date = document.getElementById('editEntryDate').value.trim();
+            entry.shift = document.getElementById('editEntryShift').value;
+            entry.liters = parseFloat(document.getElementById('editEntryLiters').value) || 0;
+            entry.fat = parseFloat(document.getElementById('editEntryFat').value) || 0;
+            entry.snf = parseFloat(document.getElementById('editEntrySnf').value) || 0;
+            entry.ratePerLiter = parseFloat(document.getElementById('editEntryRate').value) || 0;
+            entry.totalAmount = parseFloat(document.getElementById('editEntryTotal').value) || 0;
+
+            saveData();
+            closeEntryEditModal();
+            loadCustomerLedger();
+            alert('प्रविष्टि सफलतापूर्वक सम्पादन भयो!');
         }
 
         function recordPayment() {
@@ -932,8 +2199,18 @@
         function printPdfStatement() {
             const custId = parseInt(document.getElementById('ledgerCustomer').value);
             const customer = customers.find(c => c.id === custId);
-            const custEntries = milkEntries.filter(e => e.customerId === custId);
-            const custPayments = payments.filter(p => p.customerId === custId);
+
+            // स्क्रिनमा छानिएको मिति सीमा (From/To) र एकल मिति अनुसार मात्र प्रिन्ट
+            const selDate = document.getElementById('ledgerDateFilter').value;
+            const range = getLedgerRange();
+            const inRange = (d) => (!range.from || d >= range.from) && (!range.to || d <= range.to) && (!selDate || d === selDate);
+            const custEntries = milkEntries.filter(e => e.customerId === custId && inRange(e.date));
+            const custPayments = payments.filter(p => p.customerId === custId && inRange(p.date));
+            const rangeText = selDate
+                ? `छानिएको मिति: ${selDate}`
+                : ((range.from || range.to)
+                    ? `मिति सीमा: ${range.from || 'पहिलेदेखि'} देखि ${range.to || 'अहिलेसम्म'} सम्म`
+                    : 'मिति: सबै मिति');
 
             const totalL = custEntries.reduce((acc, curr) => acc + curr.liters, 0);
             const totalAmt = custEntries.reduce((acc, curr) => acc + curr.totalAmount, 0);
@@ -956,7 +2233,20 @@
                 }
                 dateMap[e.date].totalAmt += e.totalAmount;
             });
-            const groupedEntries = Object.values(dateMap);
+            // दिन (मिति) अनुसार मिलाएर र क्रमबद्ध गरेर
+            const groupedEntries = Object.values(dateMap).sort((a, b) => a.date.localeCompare(b.date));
+
+            // भुक्तानी विवरण पनि दिन अनुसार मिलाएर (एउटै दिनका भुक्तानी जोडेर)
+            const payMap = {};
+            custPayments.forEach(p => {
+                if (!payMap[p.date]) {
+                    payMap[p.date] = { date: p.date, amount: 0, notes: [] };
+                }
+                payMap[p.date].amount += p.amount;
+                const note = (p.notes || '').trim();
+                if (note) payMap[p.date].notes.push(note);
+            });
+            const groupedPayments = Object.values(payMap).sort((a, b) => a.date.localeCompare(b.date));
 
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
@@ -976,6 +2266,8 @@
                         th, td { border: 1px solid #ccc; padding: 6px; }
                         th { background-color: #f0f7fb; color: #006689; text-align: center; }
                         .summary-box { margin-top: 20px; padding: 12px; background: #f8fbfd; border: 1px solid #c2e8ff; border-radius: 6px; font-size: 13px; }
+                        .section-title { font-size: 13px; font-weight: bold; color: #006689; margin-top: 18px; margin-bottom: 4px; }
+                        .row-total td { background-color: #f0f7fb; font-weight: bold; }
                         .balance { font-size: 16px; font-weight: bold; color: #b3261e; }
                         .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; color: #555; border-top: 1px dashed #bbb; padding-top: 10px; }
                     </style>
@@ -990,8 +2282,10 @@
                     <div class="info">
                         <strong>ग्राहक/कृषक:</strong> ${customer.name}<br>
                         <strong>फोन:</strong> ${customer.phone} | <strong>ठेगाना:</strong> ${customer.address}<br>
-                        <strong>खाता प्रकार:</strong> ${customer.customerType === 'SUPPLIER' ? 'दूध बिक्रेता (कृषक)' : 'दूध खरिदकर्ता (ग्राहक)'}
+                        <strong>खाता प्रकार:</strong> ${customer.customerType === 'SUPPLIER' ? 'दूध बिक्रेता (कृषक)' : 'दूध खरिदकर्ता (ग्राहक)'}<br>
+                        <div style="margin-top: 6px; background: #f0f7fb; border: 1px solid #c2e8ff; border-radius: 4px; padding: 4px 10px; display: inline-block; color: #006689; font-weight: 600;">${rangeText}</div>
                     </div>
+                    <div class="section-title">दूध कारोबार विवरण (Milk Records)</div>
                     <table>
                         <thead>
                             <tr>
@@ -1017,6 +2311,32 @@
                             `).join('')}
                         </tbody>
                     </table>
+                    <div class="section-title">भुक्तानी विवरण (Payment History)</div>
+                    ${groupedPayments.length ? `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>मिति</th>
+                                <th>रकम (रु)</th>
+                                <th>विवरण</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${groupedPayments.map(p => `
+                                <tr>
+                                    <td style="text-align: center;">${p.date}</td>
+                                    <td style="text-align: right; font-weight: bold;">${p.amount.toFixed(2)}</td>
+                                    <td>${p.notes.length ? p.notes.join(', ') : '-'}</td>
+                                </tr>
+                            `).join('')}
+                            <tr class="row-total">
+                                <td style="text-align: center;">जम्मा भुक्तानी</td>
+                                <td style="text-align: right;">${totalPaid.toFixed(2)}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    ` : `<p style="font-size: 11px; color: #777; margin-top: 6px;">कुनै भुक्तानी भएको छैन।</p>`}
                     <div class="summary-box">
                         <div>कुल दूध परिमाण: <strong>${totalL.toFixed(1)} लिटर</strong></div>
                         <div>कुल दूधको मूल्य: <strong>रु ${totalAmt.toFixed(2)}</strong></div>
@@ -1155,11 +2475,254 @@
             reader.readAsText(file);
         }
 
+        // ===== PWA: Service Worker दर्ता =====
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err)); });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' })
+                    .then((reg) => {
+                        // नयाँ संस्करण आएमा ब्राउजरले आफैँ जाँच्न लगाउने
+                        setInterval(() => { reg.update().catch(() => {}); }, 60 * 60 * 1000);
+                    })
+                    .catch(err => console.log('SW error:', err));
+            });
+        }
+
+        // ===== PWA: Install बटन + ब्यानर (beforeinstallprompt) =====
+        let deferredInstallPrompt = null; // ब्राउजरले दिएको prompt — क्लिकमा मात्र प्रयोग
+
+        function isPwaStandalone() {
+            try {
+                if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+            } catch (e) { /* जुन browser मा matchMedia छैन */ }
+            try { return navigator.standalone === true; } catch (e) { return false; } // iOS Safari
+        }
+
+        function isIosDevice() {
+            const ua = navigator.userAgent || '';
+            if (/iphone|ipad|ipod/i.test(ua)) return true;
+            // iPadOS (म्याक जस्तो देखिने तर touch)
+            try { return /macintel/i.test(navigator.platform || '') && (navigator.maxTouchPoints || 0) > 1; }
+            catch (e) { return false; }
+        }
+
+        function updateInstallUI() {
+            const standalone = isPwaStandalone();
+            const ios = isIosDevice();
+            const title = document.getElementById('installCardTitle');
+            const desc = document.getElementById('installCardDesc');
+            const btn = document.getElementById('installCardBtn');
+            const banner = document.getElementById('installBanner');
+            if (standalone) {
+                if (title) title.innerText = '✅ एप इन्स्टल भएको छ';
+                if (desc) desc.innerText = 'होम स्क्रिनबाट सिधै खोल्न सक्नुहुन्छ।';
+                if (btn) btn.innerText = '✓ प्रयोगमा';
+            } else if (ios) {
+                if (title) title.innerText = '📱 iPhone मा एप जोड्नुहोस्';
+                if (desc) desc.innerText = 'Safari बाट होम स्क्रिनमा थप्नुहोस्।';
+                if (btn) btn.innerText = 'तरिका हेर्नुहोस्';
+            } else {
+                if (title) title.innerText = '📱 एप इन्स्टल गर्नुहोस्';
+                if (desc) desc.innerText = 'होम स्क्रिनमा जोड्नुहोस् — इन्टरनेट बिना पनि खुल्छ।';
+                if (btn) btn.innerText = 'इन्स्टल गर्नुहोस्';
+            }
+            // तल्लो ब्यानर: prompt तयार भए मात्र + एक पटक dismiss भए फेरि नदेखाउन
+            let dismissed = false;
+            try { dismissed = sessionStorage.getItem('installBannerDismissed') === '1'; } catch (e) { dismissed = false; }
+            if (banner) {
+                if (deferredInstallPrompt && !dismissed && !standalone) banner.classList.remove('hidden');
+                else banner.classList.add('hidden');
+            }
+        }
+
+        // स्वचालित popup रोकेर event सङ्कलन गर्ने — म्यानुअल क्लिकमा मात्र खुल्ने
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            updateInstallUI(); // ब्यानर देखाउने + बटन तयार
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            updateInstallUI();
+            alert('🎉 एप सफलतापूर्वक इन्स्टल भयो! होम स्क्रिनबाट खोल्न सक्नुहुन्छ।');
+        });
+
+        async function installApp() {
+            if (isPwaStandalone()) { alert('✅ एप पहिले नै इन्स्टल भएको छ।'); return; }
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt(); // ब्राउजरको इन्स्टल popup खुलाउने
+                const choice = await deferredInstallPrompt.userChoice; // { outcome: 'accepted' | 'dismissed' }
+                deferredInstallPrompt = null;
+                updateInstallUI();
+                if (choice && choice.outcome === 'accepted') alert('⏳ एप इन्स्टल हुँदैछ... केही क्षण पर्खनुहोस्।');
+                return;
+            }
+            if (isIosDevice()) { showIosInstallHelp(); return; }
+            alert('यो ब्राउजरमा स्वचालित इन्स्टल उपलब्ध छैन।\n\n• Chrome / Edge: ⋮ मेनु → "इन्स्टल एप / Install app"\n• Safari: Share ⬆️ → "Add to Home Screen"');
+        }
+
+        function showIosInstallHelp() {
+            const m = document.getElementById('iosInstallModal');
+            if (m) m.classList.remove('hidden');
+        }
+        function closeIosInstallHelp() {
+            const m = document.getElementById('iosInstallModal');
+            if (m) m.classList.add('hidden');
+        }
+        function dismissInstallBanner() {
+            try { sessionStorage.setItem('installBannerDismissed', '1'); } catch (e) { /* छैन भने बिर्सने */ }
+            updateInstallUI();
+        }
+
+        // ===== एप पासवर्ड (App Lock) =====
+        const PWD_KEY = 'appPassword';
+
+        function getPasswordRec() {
+            try { return JSON.parse(localStorage.getItem(PWD_KEY) || 'null'); }
+            catch (e) { return null; }
+        }
+
+        function makeSalt() {
+            return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+        }
+
+        // SHA-256 (Web Crypto) — plaintext कहिल्यै भण्डार गर्दैन; पुरानो browser मा FNV fallback
+        async function hashPassword(pwd, salt) {
+            const text = salt + '|' + pwd;
+            let subtle = null;
+            try { if (window.crypto && window.crypto.subtle) subtle = window.crypto.subtle; } catch (e) {}
+            if (!subtle && typeof crypto !== 'undefined' && crypto.subtle) subtle = crypto.subtle;
+            if (subtle) {
+                const buf = await subtle.digest('SHA-256', new TextEncoder().encode(text));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            let h = 0x811c9dc5;
+            for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+            return 'fnv' + h.toString(16);
+        }
+
+        function updatePasswordUI() {
+            const rec = getPasswordRec();
+            const st = document.getElementById('pwdStatus');
+            const cur = document.getElementById('pwdCurrentWrap');
+            const rm = document.getElementById('pwdRemoveBtn');
+            if (st) {
+                st.innerText = rec ? 'सक्रिय' : 'अक्षम';
+                st.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (rec ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500');
+            }
+            if (cur) { if (rec) cur.classList.remove('hidden'); else cur.classList.add('hidden'); }
+            if (rm) { if (rec) rm.classList.remove('hidden'); else rm.classList.add('hidden'); }
+        }
+
+        async function setAppPassword() {
+            const nw = document.getElementById('pwdNew');
+            const cf = document.getElementById('pwdConfirm');
+            const cur = document.getElementById('pwdCurrent');
+            const v1 = ((nw && nw.value) || '').trim();
+            const v2 = ((cf && cf.value) || '').trim();
+            if (v1.length < 4) { alert('पासवर्ड कम्तीमा ४ अक्षरको हुनुपर्छ।'); return false; }
+            if (v1 !== v2) { alert('पासवर्ड दुवै फील्ड मिल्दैनन् — फेरि लेख्नुहोस्।'); return false; }
+            const rec = getPasswordRec();
+            if (rec) {
+                const h = await hashPassword(((cur && cur.value) || ''), rec.salt);
+                if (h !== rec.hash) { alert('हालको पासवर्ड गलत छ।'); return false; }
+            }
+            const salt = makeSalt();
+            localStorage.setItem(PWD_KEY, JSON.stringify({ salt: salt, hash: await hashPassword(v1, salt), setAt: new Date().toISOString() }));
+            if (nw) nw.value = '';
+            if (cf) cf.value = '';
+            if (cur) cur.value = '';
+            updatePasswordUI();
+            alert('🔒 पासवर्ड सफलतापूर्वक सेट भयो! अर्को पटक एप खोल्दा लक देखिन्छ।');
+            return true;
+        }
+
+        async function removeAppPassword() {
+            const rec = getPasswordRec();
+            if (!rec) { updatePasswordUI(); return false; }
+            const cur = document.getElementById('pwdCurrent');
+            const h = await hashPassword(((cur && cur.value) || ''), rec.salt);
+            if (h !== rec.hash) { alert('हालको पासवर्ड गलत छ।'); return false; }
+            try { localStorage.removeItem(PWD_KEY); } catch (e) {}
+            if (cur) cur.value = '';
+            const l = document.getElementById('lockScreen');
+            if (l) l.classList.add('hidden');
+            updatePasswordUI();
+            alert('पासवर्ड हटाइयो — अब एप बिना लक खुल्छ।');
+            return true;
+        }
+
+        function showLockScreen() {
+            const l = document.getElementById('lockScreen');
+            if (l) l.classList.remove('hidden');
+            const p = document.getElementById('lockPassword');
+            if (p) p.value = '';
+            const er = document.getElementById('lockError');
+            if (er) er.classList.add('hidden');
+            setTimeout(() => {
+                const p2 = document.getElementById('lockPassword');
+                if (p2 && p2.focus) { try { p2.focus(); } catch (e) {} }
+            }, 60);
+        }
+
+        async function unlockApp(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const rec = getPasswordRec();
+            const l = document.getElementById('lockScreen');
+            const p = document.getElementById('lockPassword');
+            const er = document.getElementById('lockError');
+            if (!rec) { if (l) l.classList.add('hidden'); return true; }
+            const h = await hashPassword(((p && p.value) || ''), rec.salt);
+            if (h === rec.hash) {
+                if (l) l.classList.add('hidden');
+                if (p) p.value = '';
+                if (er) er.classList.add('hidden');
+                return true;
+            }
+            // गलत पासवर्ड: सन्देश + shake एनिमेसन
+            if (er) er.classList.remove('hidden');
+            const card = document.getElementById('lockCard');
+            if (card) {
+                card.classList.remove('shake');
+                const _reflow = card.offsetWidth; // animation पुनः सुरु गर्न
+                card.classList.add('shake');
+            }
+            if (p) { p.value = ''; if (p.focus) { try { p.focus(); } catch (err) {} } }
+            return false;
+        }
+
+        function toggleLockEye() {
+            const p = document.getElementById('lockPassword');
+            const ic = document.getElementById('lockEyeIcon');
+            if (!p) return;
+            const showing = p.type === 'password';
+            p.type = showing ? 'text' : 'password';
+            if (ic) ic.className = showing ? 'fa-regular fa-eye-slash' : 'fa-solid fa-eye';
+        }
+
+        function lockNow() {
+            const rec = getPasswordRec();
+            if (!rec) {
+                alert('पहिले डेरी सेटिङ्समा एप पासवर्ड सेट गर्नुहोस्।');
+                openSettingsModal();
+                return;
+            }
+            showLockScreen();
+        }
+
+        function initAppLock() {
+            updatePasswordUI();
+            const rec = getPasswordRec();
+            const l = document.getElementById('lockScreen');
+            if (rec) { if (l) l.classList.remove('hidden'); }
+            else { if (l) l.classList.add('hidden'); }
         }
 
         updateUI();
+        tickClock();        // नेपाली घडी पहिलो पटक देखाउने
+        autoSelectShift();  // एप खोल्दाखै समयअनुसार बिहान/साँझ आफैँ छनोट
+        updateInstallUI();  // Install बटन/ब्यानर अवस्था पहिलो पटक सेट
+        initAppLock();      // पासवर्ड सेट भएको भए लक स्क्रिन देखाउने + स्टेटस सेट
     </script>
 </body>
 </html>
